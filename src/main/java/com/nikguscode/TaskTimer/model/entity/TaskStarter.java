@@ -1,12 +1,11 @@
 package com.nikguscode.TaskTimer.model.entity;
 
-import com.google.auto.value.AutoValue;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@AutoValue
+//@AutoValue
 @Getter
 @Setter
 public class TaskStarter {

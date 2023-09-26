@@ -1,9 +1,8 @@
 package com.nikguscode.TaskTimer.model.entity;
 
-import com.google.auto.value.AutoValue;
 import java.util.Map;
 
-@AutoValue
+//@AutoValue
 public class TaskMenu {
 
     private Map<Integer, String> categoryList;

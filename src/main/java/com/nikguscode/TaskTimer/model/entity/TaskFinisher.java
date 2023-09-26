@@ -1,10 +1,8 @@
 package com.nikguscode.TaskTimer.model.entity;
 
-import com.google.auto.value.AutoValue;
-
 import java.time.LocalDateTime;
 
-@AutoValue
+//@AutoValue
 public class TaskFinisher {
 
     private String taskName;
