@@ -1,17 +1,21 @@
-package com.nikguscode.TaskTimer.model.service;
+package com.nikguscode.TaskTimer.model.service.telegramConnection;
 
+import com.nikguscode.TaskTimer.controller.MenuController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@Component
+@Service
 public class BotConnection extends TelegramLongPollingBot {
+
     private final BotConfig botConfig;
+    private final MenuController menuController;
 
     @Autowired
-    public BotConnection(BotConfig botConfig) {
+    public BotConnection(BotConfig botConfig, MenuController menuController) {
         this.botConfig = botConfig;
+        this.menuController = menuController;
     }
 
     @Override
@@ -26,13 +30,7 @@ public class BotConnection extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            // Получаем текст сообщения
-            String messageText = update.getMessage().getText();
-
-            // Выводим сообщение в консоль
-            System.out.println("Received message: " + messageText);
-        }
+        menuController.mainRedirecting(update);
     }
 
 }

@@ -1,10 +1,16 @@
 package com.nikguscode.TaskTimer.model.entity;
 
-public class Menu {
+import java.time.LocalDateTime;
+import java.util.Map;
 
-//    private JobMenu jobMenu;
-//    private JobStarter jobStarter;
-//    private JobFinisher jobFinisher;
+public class Menu {
+    private String taskName;
+    private LocalDateTime finishDate;
+    private Map<Integer, String> categoryList;
+    private int categoryId;
+    private String categoryType;
+    private LocalDateTime startDate;
+    private String taskDescription;
 
 
 
