@@ -35,11 +35,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.telegram/telegrambots -->
 		<dependency>
 			<groupId>org.telegram</groupId>
 			<artifactId>telegrambots</artifactId>
-			<version>LATEST</version>
+			<version>6.8.0</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.google.auto.value</groupId>
