@@ -1,17 +1,30 @@
 package com.nikguscode.TaskTimer.view;
 
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiValidationException;
 
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
 public class MenuBoard {
 
-    ReplyKeyboard menuBoard = new ReplyKeyboard() {
+    public ReplyKeyboardMarkup mainMenu = new ReplyKeyboardMarkup();
 
-        @Override
-        public void validate() throws TelegramApiValidationException {
-            ReplyKeyboard.super.validate();
+    public MenuBoard() {
+        List<KeyboardRow> keyboard = new ArrayList<>();
 
-        }
-    };
+        KeyboardRow row = new KeyboardRow();
+        row.add("Управление категориями");
+        row.add("Начать работу");
+        row.add("Завершить работу");
+
+        keyboard.add(row);
+
+        mainMenu.setKeyboard(keyboard);
+        mainMenu.setResizeKeyboard(true);
+    }
 
 }
