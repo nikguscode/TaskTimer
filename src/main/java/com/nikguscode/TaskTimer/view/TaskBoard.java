@@ -10,7 +10,7 @@ import java.util.List;
 @Controller
 public class TaskBoard {
 
-    private ReplyKeyboardMarkup taskBoard;
+    private final ReplyKeyboardMarkup taskBoard;
 
     public TaskBoard() {
         taskBoard = new ReplyKeyboardMarkup();
@@ -20,6 +20,9 @@ public class TaskBoard {
         KeyboardRow row = new KeyboardRow();
         row.add("Список категорий");
         row.add("Добавить категорию");
+        row.add("Вернуться в главное меню");
+
+        keyboard.add(row);
 
         taskBoard.setKeyboard(keyboard);
         taskBoard.setResizeKeyboard(true);

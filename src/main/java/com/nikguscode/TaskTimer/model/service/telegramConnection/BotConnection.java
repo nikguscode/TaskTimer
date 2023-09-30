@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
 public class BotConnection extends TelegramLongPollingBot {
@@ -31,6 +32,16 @@ public class BotConnection extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         menuController.mainRedirecting(update);
-    }
 
+        if (menuController.getSendMessage() != null) {
+            try {
+                execute(menuController.getSendMessage());
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            } catch (NullPointerException e){
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
 }
