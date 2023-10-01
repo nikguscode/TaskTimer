@@ -11,17 +11,17 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Service
 public class BotInitializer  {
 
-    private BotConnection botConnection;
+    private BotController botController;
 
     @Autowired
-    public void setBotConnection(BotConnection botConnection) {
-        this.botConnection = botConnection;
+    public void setBotConnection(BotController botController) {
+        this.botController = botController;
     }
 
     @EventListener({ContextRefreshedEvent.class})
     public void init() throws TelegramApiException{
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        botsApi.registerBot(botConnection);
+        botsApi.registerBot(botController);
     }
 
 }
