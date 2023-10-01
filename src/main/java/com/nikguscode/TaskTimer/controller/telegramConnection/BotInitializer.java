@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.model.service.telegramConnection;
+package com.nikguscode.TaskTimer.controller.telegramConnection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;

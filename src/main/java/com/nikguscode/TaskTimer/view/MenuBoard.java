@@ -21,7 +21,7 @@ public class MenuBoard {
 
         KeyboardRow row = new KeyboardRow();
         row.add("Статистика");
-        row.add("Управление категориями");
+        row.add("Управление типами");
         row.add("Начать работу");
         row.add("Завершить работу");
 

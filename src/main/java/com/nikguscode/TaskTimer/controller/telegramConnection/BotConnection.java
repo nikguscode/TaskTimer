@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.model.service.telegramConnection;
+package com.nikguscode.TaskTimer.controller.telegramConnection;
 
 import com.nikguscode.TaskTimer.controller.MenuController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,7 @@ public class BotConnection extends TelegramLongPollingBot {
         if (menuController.getSendMessage() != null) {
             try {
                 execute(menuController.getSendMessage());
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
-            } catch (NullPointerException e){
+            } catch (TelegramApiException | NullPointerException e) {
                 throw new RuntimeException(e);
             }
         }
