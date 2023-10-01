@@ -22,10 +22,10 @@ public class MenuController {
     }
 
     public void mainRedirecting(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
             sendMessage = new SendMessage();
 
             String messageText = update.getMessage().getText();
+            log.info("Получено сообщение: " + messageText);
             long chatId = update.getMessage().getChatId();
 
             sendMessage.setChatId(chatId);
@@ -33,6 +33,7 @@ public class MenuController {
             switch (messageText) {
                 case "/start":
                     sendMessage.setReplyMarkup(menuBoard.getMainMenu());
+                    log.debug("Вывод клавиатуры меню");
                     sendMessage.setText("Выберите категорию: ");
                     break;
 
@@ -41,6 +42,7 @@ public class MenuController {
 
                 case "Управление типами":
                     sendMessage.setReplyMarkup(taskBoard.getTaskBoard());
+                    log.debug("Вывод клавиатуры управления типами");
                     sendMessage.setText("Выбрано: Управление типами");
                     break;
 
@@ -51,11 +53,10 @@ public class MenuController {
                     break;
 
                 default:
-                    System.out.println("Error");
+                    log.warn("Не найдена команда в MenuController");
+                    sendMessage = null;
                     break;
             }
-
-        }
     }
 
     public SendMessage getSendMessage() {
