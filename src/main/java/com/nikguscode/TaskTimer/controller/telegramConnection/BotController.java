@@ -1,6 +1,7 @@
 package com.nikguscode.TaskTimer.controller.telegramConnection;
 
 import com.nikguscode.TaskTimer.controller.MenuController;
+import com.nikguscode.TaskTimer.model.service.TelegramMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,12 @@ public class BotController extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
     private final MenuController menuController;
+    private final TelegramMethods telegramMethods;
 
     @Autowired
-    public BotController(BotConfig botConfig, MenuController menuController) {
+    public BotController(BotConfig botConfig, MenuController menuController, TelegramMethods telegramMethods) {
         this.botConfig = botConfig;
+        this.telegramMethods = telegramMethods;
         this.menuController = menuController;
     }
 
@@ -34,7 +37,8 @@ public class BotController extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            menuController.mainRedirecting(update);
+            telegramMethods.getMessage(update);
+            menuController.mainRedirecting();
 
             if (menuController.getSendMessage() == null) {
                 log.warn("null or undefined message");

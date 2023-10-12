@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.model.entity;
+package com.nikguscode.TaskTimer.controller.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
