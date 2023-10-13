@@ -76,8 +76,10 @@ public class MenuController {
 
             default:
                 log.warn("Не найдена команда в MenuController");
-                sendMessage.setText("❌ Кажется, указанная команда не найдена. " +
-                        "\n\n" + "❓ Используйте \"/start\"");
+                sendMessage.setText("""
+                        ❌ Кажется, указанная команда не найдена.\s
+
+                        ❓ Используйте "/start\"""");
                 break;
         }
 
