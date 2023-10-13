@@ -27,15 +27,15 @@ public class MenuBoard {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Статистика");
-        row.add("Управление типами");
+        row.add("\uD83D\uDCCA Статистика");
+        row.add("\uD83D\uDCC1 Управление типами");
 
         if (!launchCommands.isStarted()) {
-            row.remove("Завершить работу");
-            row.add("Начать работу");
+            row.remove("\uD83C\uDFC1 Завершить работу");
+            row.add("\uD83D\uDE80 Начать работу");
         } else {
-            row.remove("Начать работу");
-            row.add("Завершить работу");
+            row.remove("\uD83D\uDE80 Начать работу");
+            row.add("\uD83C\uDFC1 Завершить работу");
         }
 
         keyboard.add(row);
