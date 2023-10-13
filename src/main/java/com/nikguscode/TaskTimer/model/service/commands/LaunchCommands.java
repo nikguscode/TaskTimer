@@ -2,14 +2,13 @@ package com.nikguscode.TaskTimer.model.service.commands;
 
 
 import com.nikguscode.TaskTimer.model.service.TelegramMethods;
-import com.nikguscode.TaskTimer.view.MenuBoard;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
 
 /**
- * This class contains "/start" and "/stop" command logic
+ * This class contains "/start" and "/stop" commands logic
  */
 
 @Service
@@ -41,14 +40,14 @@ public class LaunchCommands {
         Duration duration = Duration.between(startTime, endTime);
 
         if (duration.toDays() == 0) {
-            formattedDuration = duration.toHours() % 24
-                    + ":" + duration.toMinutes() % 60
-                    + ":" + duration.toSeconds() % 60;
+            formattedDuration = (duration.toHours() < 10 ? "0" : "") + duration.toHours() % 24 + ":"
+                    + (duration.toMinutes() < 10 ? "0" : "") + duration.toMinutes() % 60 + ":"
+                    + (duration.toSeconds() < 10 ? "0" : "") + duration.toSeconds() % 60;
         } else {
-            formattedDuration = duration.toDays() + ":"
-                    + duration.toHours() % 24 + ":"
-                    + duration.toMinutes() % 60 + ":"
-                    + duration.toSeconds() % 60;
+            formattedDuration = duration.toDays() + "d. | "
+                    + (duration.toHours() < 10 ? "0" : "") +duration.toHours() % 24 + ":"
+                    + (duration.toMinutes() < 10 ? "0" : "") +duration.toMinutes() % 60 + ":"
+                    + (duration.toSeconds() < 10 ? "0" : "") + duration.toSeconds() % 60;
         }
 
     }
