@@ -2,7 +2,6 @@ package com.nikguscode.TaskTimer.model.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.Instant;
@@ -15,7 +14,6 @@ import java.util.Locale;
 @Slf4j
 public class TelegramMethods {
 
-    private SendMessage sendMessage;
     private String messageText;
     private Long userId;
     private Long chatId;
