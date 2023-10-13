@@ -40,16 +40,16 @@ public class MenuController {
                 sendMessage.setText("Выберите категорию: ");
                 break;
 
-            case "Статистика":
+            case "\uD83D\uDCCA Статистика":
                 break;
 
-            case "Управление типами":
+            case "\uD83D\uDCC1 Управление типами":
                 sendMessage.setReplyMarkup(taskBoard.getTaskBoard());
                 log.debug("Вывод клавиатуры управления типами");
                 sendMessage.setText("Выбрано: Управление типами");
                 break;
 
-            case "Начать работу":
+            case "\uD83D\uDE80 Начать работу":
 
                 if (!launchCommands.isStarted()) {
                     launchCommands.start();
@@ -61,7 +61,7 @@ public class MenuController {
 
                 break;
 
-            case "Завершить работу":
+            case "\uD83C\uDFC1 Завершить работу":
 
                 if (launchCommands.isStarted()) {
                     launchCommands.stop();
@@ -77,7 +77,7 @@ public class MenuController {
             default:
                 log.warn("Не найдена команда в MenuController");
                 sendMessage.setText("❌ Кажется, указанная команда не найдена. " +
-                        "\n       Используйте \"/start\"");
+                        "\n\n" + "❓ Используйте \"/start\"");
                 break;
         }
 
