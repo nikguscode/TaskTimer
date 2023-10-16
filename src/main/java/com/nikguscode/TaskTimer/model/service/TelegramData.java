@@ -12,7 +12,7 @@ import java.util.Locale;
 
 @Service
 @Slf4j
-public class TelegramMethods {
+public class TelegramData {
 
     private String messageText;
     private Long userId;
