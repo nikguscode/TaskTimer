@@ -1,7 +1,7 @@
 package com.nikguscode.TaskTimer.controller.telegramConnection;
 
-import com.nikguscode.TaskTimer.controller.MenuController;
-import com.nikguscode.TaskTimer.model.service.TelegramMethods;
+import com.nikguscode.TaskTimer.controller.MasterController;
+import com.nikguscode.TaskTimer.model.service.TelegramData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,16 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class BotController extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
-    private final MenuController menuController;
-    private final TelegramMethods telegramMethods;
+    private final TelegramData telegramData;
+    private final MasterController masterController;
 
     @Autowired
-    public BotController(BotConfig botConfig, MenuController menuController, TelegramMethods telegramMethods) {
+    public BotController(BotConfig botConfig,
+                         TelegramData telegramData,
+                         MasterController masterController) {
         this.botConfig = botConfig;
-        this.telegramMethods = telegramMethods;
-        this.menuController = menuController;
+        this.telegramData = telegramData;
+        this.masterController = masterController;
     }
 
     @Override
@@ -37,17 +39,13 @@ public class BotController extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            telegramMethods.getMessage(update);
-            menuController.mainRedirecting();
+            telegramData.getMessage(update);
+            masterController.setController();
 
-            if (menuController.getSendMessage() == null) {
-                log.warn("null or undefined message");
-            }
-
-            if (menuController.getSendMessage() != null) {
+            if (masterController.getSendMessage() != null) {
                 try {
-                    log.info("Отправлено сообщение: " + menuController.getSendMessage().getText());
-                    execute(menuController.getSendMessage());
+                    log.info("Отправлено сообщение: " + masterController.getSendMessage().getText());
+                    execute(masterController.getSendMessage());
                 } catch (TelegramApiException e) {
                     log.error("Telegram exception");
                     throw new RuntimeException(e.getClass().getSimpleName());
