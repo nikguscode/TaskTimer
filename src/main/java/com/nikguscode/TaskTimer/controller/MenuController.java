@@ -1,9 +1,9 @@
 package com.nikguscode.TaskTimer.controller;
 
-import com.nikguscode.TaskTimer.model.service.TelegramMethods;
+import com.nikguscode.TaskTimer.controller.state.MessageHandler;
+import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.model.service.commands.LaunchCommands;
 import com.nikguscode.TaskTimer.view.MenuBoard;
-import com.nikguscode.TaskTimer.view.TaskBoard;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,29 +11,27 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Slf4j
 @Controller
-public class MenuController {
-    private final TelegramMethods telegramMethods;
+public class MenuController implements MessageHandler {
+    private final TelegramData telegramData;
     private final MenuBoard menuBoard;
-    private final TaskBoard taskBoard;
     private final LaunchCommands launchCommands;
     private SendMessage sendMessage;
 
     @Autowired
-    public MenuController(TelegramMethods telegramMethods,
-                          TaskBoard taskBoard,
+    public MenuController(TelegramData telegramData,
                           MenuBoard menuBoard,
                           LaunchCommands launchCommands) {
-        this.telegramMethods = telegramMethods;
+        this.telegramData = telegramData;
         this.menuBoard = menuBoard;
-        this.taskBoard = taskBoard;
         this.launchCommands = launchCommands;
     }
 
-    public void mainRedirecting() {
-        sendMessage = new SendMessage();
-        sendMessage.setChatId(telegramMethods.getChatId());
+    public void handleCommands() {
 
-        switch (telegramMethods.getMessageText()) {
+        sendMessage = new SendMessage();
+        sendMessage.setChatId(telegramData.getChatId());
+
+        switch (telegramData.getMessageText()) {
             case "/start":
                 sendMessage.setReplyMarkup(menuBoard.getMainMenu());
                 log.debug("Вывод клавиатуры меню");
@@ -43,14 +41,7 @@ public class MenuController {
             case "\uD83D\uDCCA Статистика":
                 break;
 
-            case "\uD83D\uDCC1 Управление типами":
-                sendMessage.setReplyMarkup(taskBoard.getTaskBoard());
-                log.debug("Вывод клавиатуры управления типами");
-                sendMessage.setText("Выбрано: Управление типами");
-                break;
-
             case "\uD83D\uDE80 Начать работу":
-
                 if (!launchCommands.isStarted()) {
                     launchCommands.start();
                     sendMessage.setText("✅ Таймер запущен.");
@@ -58,11 +49,9 @@ public class MenuController {
                 } else {
                     sendMessage.setText("❌ Ошибка. Кажется, таймер уже запущен.");
                 }
-
                 break;
 
             case "\uD83C\uDFC1 Завершить работу":
-
                 if (launchCommands.isStarted()) {
                     launchCommands.stop();
                     sendMessage.setText("✅ Таймер остановлен, время работы: "
@@ -71,7 +60,11 @@ public class MenuController {
                 } else {
                     sendMessage.setText("❌ Ошибка. Кажется, Вы ещё не запускали таймер.");
                 }
+                break;
 
+            case ("Вернуться в главное меню"):
+                sendMessage.setReplyMarkup(menuBoard.getMainMenu());
+                sendMessage.setText("Успешно");
                 break;
 
             default:
@@ -85,7 +78,8 @@ public class MenuController {
 
     }
 
-    public SendMessage getSendMessage() {
+    @Override
+    public SendMessage sendMessage() {
         return sendMessage;
     }
 
