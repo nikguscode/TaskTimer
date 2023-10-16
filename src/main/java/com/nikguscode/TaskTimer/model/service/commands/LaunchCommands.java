@@ -1,7 +1,7 @@
 package com.nikguscode.TaskTimer.model.service.commands;
 
 
-import com.nikguscode.TaskTimer.model.service.TelegramMethods;
+import com.nikguscode.TaskTimer.model.service.TelegramData;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -14,25 +14,25 @@ import java.time.Instant;
 @Service
 public class LaunchCommands {
 
-    private final TelegramMethods telegramMethods;
+    private final TelegramData telegramData;
     private Instant startTime;
     private Instant endTime;
     private String formattedDuration;
     private boolean isStarted;
 
-    public LaunchCommands(TelegramMethods telegramMethods) {
-        this.telegramMethods = telegramMethods;
+    public LaunchCommands(TelegramData telegramData) {
+        this.telegramData = telegramData;
     }
 
     public void start() {
         isStarted = true;
-        startTime = telegramMethods.getInstant();
+        startTime = telegramData.getInstant();
     }
 
     public void stop() {
         isStarted = false;
 
-        endTime = telegramMethods.getInstant();
+        endTime = telegramData.getInstant();
         getDuration();
     }
 
