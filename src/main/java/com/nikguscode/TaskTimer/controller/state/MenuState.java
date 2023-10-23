@@ -15,7 +15,6 @@ public class MenuState implements KeyboardCommandHandler {
         this.menuController = menuController;
     }
 
-    @Override
     public void handleCommands() {
         menuController.handleCommands();
     }

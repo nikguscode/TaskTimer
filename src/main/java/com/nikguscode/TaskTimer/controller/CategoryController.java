@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
 /**
  * This class contains a keyboard controller, where the user can choose to add a category or view created
@@ -44,8 +45,9 @@ public class CategoryController implements MessageHandler {
         sendMessage = new SendMessage();
         sendMessage.setChatId(telegramData.getChatId());
 
-        if (telegramData.getMessageText().equals("Список категорий")) {
+        if (telegramData.getMessageText().equals("\uD83D\uDCC4 Список категорий")) {
             sendMessage.setText("Выбрана категория: список категорий");
+            sendMessage.setReplyMarkup(new ReplyKeyboardRemove());
             sendMessage.setReplyMarkup(categoryBoard.getBoard());
         }
 

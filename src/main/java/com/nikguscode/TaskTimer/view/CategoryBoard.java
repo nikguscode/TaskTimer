@@ -23,6 +23,7 @@ public class CategoryBoard {
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
 
         InlineKeyboardButton addCategoryButton = new InlineKeyboardButton();
         addCategoryButton.setText("Добавить категорию");
@@ -32,10 +33,16 @@ public class CategoryBoard {
         showCategoriesButton.setText("Список созданных категорий");
         showCategoriesButton.setCallbackData("list_of_ctg");
 
+        InlineKeyboardButton backButton = new InlineKeyboardButton();
+        backButton.setText("Вернуться назад");
+        backButton.setCallbackData("back_btn");
+
         keyboardButtonsRow1.add(addCategoryButton);
         keyboardButtonsRow1.add(showCategoriesButton);
+        keyboardButtonsRow2.add(backButton);
 
         rowList.add(keyboardButtonsRow1);
+        rowList.add(keyboardButtonsRow2);
 
         categoryBoard.setKeyboard(rowList);
     }

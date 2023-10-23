@@ -22,9 +22,9 @@ public class TaskBoard {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("Активная категория");
-        row.add("Список категорий");
-        row.add("Вернуться в главное меню");
+        row.add("\uD83D\uDCCD Активная категория");
+        row.add("\uD83D\uDCC4 Список категорий");
+        row.add("\uD83C\uDFE0 Вернуться в главное меню");
 
         keyboard.add(row);
 

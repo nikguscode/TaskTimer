@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
 @Controller
@@ -38,9 +40,8 @@ public class TaskController implements MessageHandler {
                 sendMessage.setText("Выберите категорию: ");
                 break;
 
-            case ("Активная категория"):
+            case ("\uD83D\uDCCD Активная категория"):
                 sendMessage.setText("Выбрана категория: активная категория");
-
                 break;
 
             case ("\uD83D\uDCC1 Управление типами"):
@@ -58,9 +59,16 @@ public class TaskController implements MessageHandler {
 
     }
 
+    public void handleCommands(Update update) {
+    }
+
     @Override
     public SendMessage sendMessage() {
         return sendMessage;
+    }
+
+    public EditMessageText sendEditMessage() {
+        return null;
     }
 
 }

@@ -3,11 +3,11 @@ package com.nikguscode.TaskTimer.controller;
 import com.nikguscode.TaskTimer.controller.state.*;
 import com.nikguscode.TaskTimer.model.dal.AddCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 
 @Service
 public class MasterController {
@@ -22,6 +22,7 @@ public class MasterController {
     private EditMessageText editMessageText;
     private SendMessage sendMessage;
 
+    @Autowired
     public MasterController(TelegramData telegramData,
                             MenuController menuController,
                             TaskController taskController,
@@ -38,17 +39,20 @@ public class MasterController {
 
     public void setController() {
 
+        // TaskController
         if (telegramData.getMessageText().equals("\uD83D\uDCC1 Управление типами")) {
             currentBoard = new TaskState(taskController);
             currentMessage = taskController;
         }
 
-        if (telegramData.getMessageText().equals("Вернуться в главное меню")) {
+        // MenuController
+        if (telegramData.getMessageText().equals("\uD83C\uDFE0 Вернуться в главное меню")) {
             currentBoard = new MenuState(menuController);
             currentMessage = menuController;
         }
 
-        if (telegramData.getMessageText().equals("Список категорий")) {
+        // CategoryController
+        if (telegramData.getMessageText().equals("\uD83D\uDCC4 Список категорий")) {
             currentBoard = new CategoryState(categoryController);
             currentMessage = categoryController;
         }
@@ -74,6 +78,7 @@ public class MasterController {
             sendMessage = new SendMessage();
             sendMessage.setChatId(telegramData.getChatId());
 
+            // AddCategory
             if(categoryController.isAddCtgSelected()) {
                 addCategory.transaction();
                 categoryController.setAddCtgSelected(false); // указывает на add_ctg callback

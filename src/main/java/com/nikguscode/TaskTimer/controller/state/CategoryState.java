@@ -14,7 +14,6 @@ public class CategoryState implements KeyboardCommandHandler {
         this.categoryController = categoryController;
     }
 
-    @Override
     public void handleCommands() {
         categoryController.handleCommands();
     }

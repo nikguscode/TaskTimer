@@ -13,7 +13,6 @@ public class TaskState implements KeyboardCommandHandler {
         this.taskController = taskController;
     }
 
-    @Override
     public void handleCommands() {
         taskController.handleCommands();
     }

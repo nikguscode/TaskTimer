@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
 @Controller
@@ -62,7 +64,7 @@ public class MenuController implements MessageHandler {
                 }
                 break;
 
-            case ("Вернуться в главное меню"):
+            case ("\uD83C\uDFE0 Вернуться в главное меню"):
                 sendMessage.setReplyMarkup(menuBoard.getBoard());
                 sendMessage.setText("Успешно");
                 break;
@@ -77,9 +79,15 @@ public class MenuController implements MessageHandler {
 
     }
 
+    public void handleCommands(Update update) {
+    }
+
     @Override
     public SendMessage sendMessage() {
         return sendMessage;
+    }
+    public EditMessageText sendEditMessage() {
+        return null;
     }
 
 }
