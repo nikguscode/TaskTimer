@@ -1,7 +1,6 @@
-package com.nikguscode.TaskTimer.controller.telegramConnection;
+package com.nikguscode.TaskTimer.controller.telegramControllers;
 
 import com.nikguscode.TaskTimer.controller.MasterController;
-import com.nikguscode.TaskTimer.model.dal.AddUser;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +16,14 @@ public class BotController extends TelegramLongPollingBot {
     private final BotConfig botConfig;
     private final TelegramData telegramData;
     private final MasterController masterController;
-    private AddUser addUser;
 
     @Autowired
     public BotController(BotConfig botConfig,
                          TelegramData telegramData,
-                         MasterController masterController,
-                         AddUser addUser) {
+                         MasterController masterController) {
         this.botConfig = botConfig;
         this.telegramData = telegramData;
         this.masterController = masterController;
-        this.addUser = addUser;
     }
 
     @Override

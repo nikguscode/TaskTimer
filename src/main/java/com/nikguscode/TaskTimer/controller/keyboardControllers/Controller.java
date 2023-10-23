@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.controller;
+package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -9,5 +9,4 @@ public interface Controller {
     void handleCommands(Update update);
     SendMessage sendMessage();
     EditMessageText sendEditMessage();
-
 }

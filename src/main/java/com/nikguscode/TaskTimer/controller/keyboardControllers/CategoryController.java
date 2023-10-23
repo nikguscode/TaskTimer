@@ -1,6 +1,5 @@
-package com.nikguscode.TaskTimer.controller;
+package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
-import com.nikguscode.TaskTimer.controller.state.MessageHandler;
 import com.nikguscode.TaskTimer.model.dal.AddCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.view.CategoryBoard;
@@ -23,7 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 @Getter
 @Setter
 @Slf4j
-public class CategoryController implements MessageHandler {
+public class CategoryController implements com.nikguscode.TaskTimer.controller.keyboardControllers.Controller {
 
     private final TelegramData telegramData;
     private final AddCategory addCategory;

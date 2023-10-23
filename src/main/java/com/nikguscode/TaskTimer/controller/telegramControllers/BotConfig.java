@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.controller.telegramConnection;
+package com.nikguscode.TaskTimer.controller.telegramControllers;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

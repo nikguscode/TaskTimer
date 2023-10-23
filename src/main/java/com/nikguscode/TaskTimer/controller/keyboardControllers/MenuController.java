@@ -1,6 +1,5 @@
-package com.nikguscode.TaskTimer.controller;
+package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
-import com.nikguscode.TaskTimer.controller.state.MessageHandler;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
 import com.nikguscode.TaskTimer.view.MenuBoard;
@@ -13,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
 @Controller
-public class MenuController implements MessageHandler {
+public class MenuController implements com.nikguscode.TaskTimer.controller.keyboardControllers.Controller {
     private final TelegramData telegramData;
     private final MenuBoard menuBoard;
     private final Launch launch;

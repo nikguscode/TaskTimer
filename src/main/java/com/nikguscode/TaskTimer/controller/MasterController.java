@@ -1,9 +1,11 @@
 package com.nikguscode.TaskTimer.controller;
 
-import com.nikguscode.TaskTimer.controller.state.*;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.CategoryController;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.Controller;
 import com.nikguscode.TaskTimer.model.dal.AddCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -13,60 +15,49 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class MasterController {
 
     private final TelegramData telegramData;
-    private final MenuController menuController;
-    private final CategoryController categoryController;
-    private final TaskController taskController;
+    private final Controller menuController;
+    private final Controller categoryController;
+    private final Controller taskController;
     private final AddCategory addCategory;
-    private KeyboardCommandHandler currentBoard;
-    private MessageHandler currentMessage;
-    private EditMessageText editMessageText;
+    private Controller currentController;
     private SendMessage sendMessage;
 
     @Autowired
     public MasterController(TelegramData telegramData,
-                            MenuController menuController,
-                            TaskController taskController,
-                            CategoryController categoryController,
+                            @Qualifier("menuController") Controller menuController,
+                            @Qualifier("categoryController") Controller categoryController,
+                            @Qualifier("taskController") Controller taskController,
                             AddCategory addCategory) {
         this.telegramData = telegramData;
-        this.taskController = taskController;
         this.menuController = menuController;
+        this.currentController = menuController;
+        this.taskController = taskController;
         this.categoryController = categoryController;
-        this.currentMessage = menuController;
-        this.currentBoard = new MenuState(menuController);
         this.addCategory = addCategory;
     }
 
     public void setController() {
 
-        // TaskController
         if (telegramData.getMessageText().equals("\uD83D\uDCC1 Управление типами")) {
-            currentBoard = new TaskState(taskController);
-            currentMessage = taskController;
+            currentController = taskController;
         }
 
-        // MenuController
         if (telegramData.getMessageText().equals("\uD83C\uDFE0 Вернуться в главное меню")) {
-            currentBoard = new MenuState(menuController);
-            currentMessage = menuController;
+            currentController = menuController;
         }
 
-        // CategoryController
         if (telegramData.getMessageText().equals("\uD83D\uDCC4 Список категорий")) {
-            currentBoard = new CategoryState(categoryController);
-            currentMessage = categoryController;
+            currentController = categoryController;
         }
 
-        currentBoard.handleCommands();
-
+        currentController.handleCommands();
     }
 
     public void setCallbackController(Update update) {
         if (update.hasCallbackQuery()) {
 
-            if (currentMessage == categoryController) {
-                categoryController.handleCommands(update);
-                editMessageText = categoryController.sendEditMessage();
+            if (currentController == categoryController) {
+                currentController.handleCommands(update);
             }
 
         }
@@ -78,21 +69,22 @@ public class MasterController {
             sendMessage = new SendMessage();
             sendMessage.setChatId(telegramData.getChatId());
 
-            // AddCategory
-            if(categoryController.isAddCtgSelected()) {
-                addCategory.transaction();
-                categoryController.setAddCtgSelected(false); // указывает на add_ctg callback
+            if (currentController instanceof CategoryController) {
+                CategoryController categoryController = (CategoryController) currentController;
+                if (categoryController.isAddCtgSelected()) {
+                    addCategory.transaction();
+                    categoryController.setAddCtgSelected(false); // указывает на add_ctg callback
 
-                if (addCategory.isTransacted()) {
-                    sendMessage.setText("Успешно");
-                    currentBoard = new MenuState(menuController);
-                    currentMessage = menuController;
-                    addCategory.setTransacted(false); // указывает на проверку повторяющегося category_name
-                } else {
-                    sendMessage.setText("Данная категория уже создана, попробуйте указать другое имя");
-                    categoryController.setAddCtgSelected(true); // повторный запуск сценария для создания категории
+                    if (addCategory.isTransacted()) {
+                        currentController = menuController;
+                        sendMessage.setText("Успешно");
+                        addCategory.setTransacted(false); // указывает на проверку повторяющегося category_name
+                    } else {
+                        sendMessage.setText("Данная категория уже создана, попробуйте указать другое имя");
+                        categoryController.setAddCtgSelected(true); // повторный запуск сценария для создания категории
+                    }
+
                 }
-
             }
 
         }
@@ -100,11 +92,11 @@ public class MasterController {
     }
 
     public SendMessage getSendMessage() {
-        return currentMessage.sendMessage();
+        return currentController.sendMessage();
     }
 
     public EditMessageText editMessageText() {
-        return editMessageText;
+        return currentController.sendEditMessage();
     }
 
     public SendMessage sendMessage() {
