@@ -2,7 +2,7 @@ package com.nikguscode.TaskTimer.controller;
 
 import com.nikguscode.TaskTimer.controller.state.MessageHandler;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
-import com.nikguscode.TaskTimer.model.service.commands.LaunchCommands;
+import com.nikguscode.TaskTimer.model.service.commands.Launch;
 import com.nikguscode.TaskTimer.view.MenuBoard;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +14,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 public class MenuController implements MessageHandler {
     private final TelegramData telegramData;
     private final MenuBoard menuBoard;
-    private final LaunchCommands launchCommands;
+    private final Launch launch;
     private SendMessage sendMessage;
 
     @Autowired
     public MenuController(TelegramData telegramData,
                           MenuBoard menuBoard,
-                          LaunchCommands launchCommands) {
+                          Launch launch) {
         this.telegramData = telegramData;
         this.menuBoard = menuBoard;
-        this.launchCommands = launchCommands;
+        this.launch = launch;
     }
 
     public void handleCommands() {
@@ -33,7 +33,7 @@ public class MenuController implements MessageHandler {
 
         switch (telegramData.getMessageText()) {
             case "/start":
-                sendMessage.setReplyMarkup(menuBoard.getMainMenu());
+                sendMessage.setReplyMarkup(menuBoard.getBoard());
                 log.debug("Вывод клавиатуры меню");
                 sendMessage.setText("Выберите категорию: ");
                 break;
@@ -42,36 +42,35 @@ public class MenuController implements MessageHandler {
                 break;
 
             case "\uD83D\uDE80 Начать работу":
-                if (!launchCommands.isStarted()) {
-                    launchCommands.start();
+                if (!launch.isStarted()) {
+                    launch.start();
                     sendMessage.setText("✅ Таймер запущен.");
-                    sendMessage.setReplyMarkup(menuBoard.getMainMenu());
+                    sendMessage.setReplyMarkup(menuBoard.getBoard());
                 } else {
                     sendMessage.setText("❌ Ошибка. Кажется, таймер уже запущен.");
                 }
                 break;
 
             case "\uD83C\uDFC1 Завершить работу":
-                if (launchCommands.isStarted()) {
-                    launchCommands.stop();
+                if (launch.isStarted()) {
+                    launch.stop();
                     sendMessage.setText("✅ Таймер остановлен, время работы: "
-                            + launchCommands.getFormattedDuration());
-                    sendMessage.setReplyMarkup(menuBoard.getMainMenu());
+                            + launch.getFormattedDuration());
+                    sendMessage.setReplyMarkup(menuBoard.getBoard());
                 } else {
                     sendMessage.setText("❌ Ошибка. Кажется, Вы ещё не запускали таймер.");
                 }
                 break;
 
             case ("Вернуться в главное меню"):
-                sendMessage.setReplyMarkup(menuBoard.getMainMenu());
+                sendMessage.setReplyMarkup(menuBoard.getBoard());
                 sendMessage.setText("Успешно");
                 break;
 
             default:
-                log.warn("Не найдена команда в MenuController");
+                log.warn("Не найдена команда в MenuController, либо не доступна в текущем сценарии");
                 sendMessage.setText("""
                         ❌ Кажется, указанная команда не найдена.\s
-
                         ❓ Используйте "/start\"""");
                 break;
         }

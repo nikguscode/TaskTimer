@@ -1,36 +1,39 @@
 package com.nikguscode.TaskTimer.controller;
 
-import com.nikguscode.TaskTimer.controller.state.KeyboardCommandHandler;
-import com.nikguscode.TaskTimer.controller.state.MenuState;
-import com.nikguscode.TaskTimer.controller.state.MessageHandler;
-import com.nikguscode.TaskTimer.controller.state.TaskState;
+import com.nikguscode.TaskTimer.controller.state.*;
+import com.nikguscode.TaskTimer.model.dal.AddCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 
 @Service
 public class MasterController {
 
-    private TelegramData telegramData;
-    private MenuController menuController;
-    private MenuState menuState;
-    private TaskController taskController;
-    private TaskState taskState;
+    private final TelegramData telegramData;
+    private final MenuController menuController;
+    private final CategoryController categoryController;
+    private final TaskController taskController;
+    private final AddCategory addCategory;
     private KeyboardCommandHandler currentBoard;
-    private SendMessage sendMessage;
     private MessageHandler currentMessage;
+    private EditMessageText editMessageText;
+    private SendMessage sendMessage;
 
     public MasterController(TelegramData telegramData,
                             MenuController menuController,
                             TaskController taskController,
-                            MenuState menuState,
-                            TaskState taskState) {
+                            CategoryController categoryController,
+                            AddCategory addCategory) {
         this.telegramData = telegramData;
         this.taskController = taskController;
         this.menuController = menuController;
+        this.categoryController = categoryController;
         this.currentMessage = menuController;
         this.currentBoard = new MenuState(menuController);
+        this.addCategory = addCategory;
     }
 
     public void setController() {
@@ -45,12 +48,62 @@ public class MasterController {
             currentMessage = menuController;
         }
 
+        if (telegramData.getMessageText().equals("Список категорий")) {
+            currentBoard = new CategoryState(categoryController);
+            currentMessage = categoryController;
+        }
+
         currentBoard.handleCommands();
+
+    }
+
+    public void setCallbackController(Update update) {
+        if (update.hasCallbackQuery()) {
+
+            if (currentMessage == categoryController) {
+                categoryController.handleCommands(update);
+                editMessageText = categoryController.sendEditMessage();
+            }
+
+        }
+    }
+
+    public void setDatabaseController(Update update) {
+
+        if (update.hasMessage()) {
+            sendMessage = new SendMessage();
+            sendMessage.setChatId(telegramData.getChatId());
+
+            if(categoryController.isAddCtgSelected()) {
+                addCategory.transaction();
+                categoryController.setAddCtgSelected(false); // указывает на add_ctg callback
+
+                if (addCategory.isTransacted()) {
+                    sendMessage.setText("Успешно");
+                    currentBoard = new MenuState(menuController);
+                    currentMessage = menuController;
+                    addCategory.setTransacted(false); // указывает на проверку повторяющегося category_name
+                } else {
+                    sendMessage.setText("Данная категория уже создана, попробуйте указать другое имя");
+                    categoryController.setAddCtgSelected(true); // повторный запуск сценария для создания категории
+                }
+
+            }
+
+        }
 
     }
 
     public SendMessage getSendMessage() {
         return currentMessage.sendMessage();
+    }
+
+    public EditMessageText editMessageText() {
+        return editMessageText;
+    }
+
+    public SendMessage sendMessage() {
+        return sendMessage;
     }
 
 }

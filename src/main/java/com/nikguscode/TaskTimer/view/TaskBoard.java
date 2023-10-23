@@ -13,10 +13,10 @@ public class TaskBoard {
     private ReplyKeyboardMarkup taskBoard;
 
     public TaskBoard() {
-        createTaskBoardMenu();
+        createBoard();
     }
 
-    private void createTaskBoardMenu() {
+    private void createBoard() {
         taskBoard = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
@@ -32,8 +32,8 @@ public class TaskBoard {
         taskBoard.setResizeKeyboard(true);
     }
 
-    public ReplyKeyboardMarkup getTaskBoard() {
-        createTaskBoardMenu();
+    public ReplyKeyboardMarkup getBoard() {
+        createBoard();
         return taskBoard;
     }
 

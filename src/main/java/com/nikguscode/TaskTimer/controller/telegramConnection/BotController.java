@@ -1,6 +1,7 @@
 package com.nikguscode.TaskTimer.controller.telegramConnection;
 
 import com.nikguscode.TaskTimer.controller.MasterController;
+import com.nikguscode.TaskTimer.model.dal.AddUser;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,17 @@ public class BotController extends TelegramLongPollingBot {
     private final BotConfig botConfig;
     private final TelegramData telegramData;
     private final MasterController masterController;
+    private AddUser addUser;
 
     @Autowired
     public BotController(BotConfig botConfig,
                          TelegramData telegramData,
-                         MasterController masterController) {
+                         MasterController masterController,
+                         AddUser addUser) {
         this.botConfig = botConfig;
         this.telegramData = telegramData;
         this.masterController = masterController;
+        this.addUser = addUser;
     }
 
     @Override
@@ -38,23 +42,58 @@ public class BotController extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            telegramData.getMessage(update);
-            masterController.setController();
 
-            if (masterController.getSendMessage() != null) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            telegramData.getMessageInfo(update);
+            masterController.setController();
+            masterController.setDatabaseController(update);
+
+            if (masterController.getSendMessage() != null || masterController.sendMessage() != null) {
                 try {
-                    log.info("Отправлено сообщение: " + masterController.getSendMessage().getText());
-                    execute(masterController.getSendMessage());
+
+                    if (masterController.sendMessage().getText() != null) {
+                        log.info("Отправлено сообщение: " + masterController.sendMessage().getText());
+                        execute(masterController.sendMessage());
+                    }
+
+                    if (masterController.getSendMessage().getText() != null) {
+                        log.info("Отправлено сообщение: " + masterController.getSendMessage().getText());
+                        execute(masterController.getSendMessage());
+                    }
+
                 } catch (TelegramApiException e) {
-                    log.error("Telegram exception");
-                    throw new RuntimeException(e.getClass().getSimpleName());
+                    log.error("Ошибка Telegram API при отправке сообщения", e);
+                    throw new RuntimeException("Ошибка Telegram: " + e.getMessage(), e);
                 } catch (NullPointerException e) {
-                    log.error("Null Exception");
-                    throw new RuntimeException(e);
+                    log.error("Ошибка NullPointerException при отправке сообщения", e);
+                    throw new RuntimeException("Ошибка NullPointerException: " + e.getMessage(), e);
+                } catch (Exception e) {
+                    log.error("Непредвиденная ошибка при отправке сообщения", e);
+                    throw new RuntimeException("Непредвиденная ошибка: " + e.getMessage(), e);
                 }
             }
 
         }
+
+        if (update.hasCallbackQuery()) {
+            telegramData.getCallbackQuery(update);
+            masterController.setCallbackController(update);
+
+            try {
+                log.info("[Callback] Отправлено сообщение: " + masterController.editMessageText().getText());
+                execute(masterController.editMessageText());
+            } catch (TelegramApiException e) {
+                log.error("[Callback] Ошибка Telegram API при отправке сообщения", e);
+                throw new RuntimeException("Ошибка Telegram: " + e.getMessage(), e);
+            } catch (NullPointerException e) {
+                log.error("[Callback] Ошибка NullPointerException при отправке сообщения", e);
+                throw new RuntimeException("Ошибка NullPointerException: " + e.getMessage(), e);
+            } catch (Exception e) {
+                log.error("[Callback] Непредвиденная ошибка при отправке сообщения", e);
+                throw new RuntimeException("Непредвиденная ошибка: " + e.getMessage(), e);
+            }
+
+        }
+
     }
 }

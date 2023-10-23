@@ -1,6 +1,6 @@
 package com.nikguscode.TaskTimer.view;
 
-import com.nikguscode.TaskTimer.model.service.commands.LaunchCommands;
+import com.nikguscode.TaskTimer.model.service.commands.Launch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -12,16 +12,16 @@ import java.util.List;
 @Controller
 public class MenuBoard {
 
-    private final LaunchCommands launchCommands;
+    private final Launch launch;
     private ReplyKeyboardMarkup mainMenu;
 
     @Autowired
-    public MenuBoard(LaunchCommands launchCommands) {
-        this.launchCommands = launchCommands;
-        createMainMenu();
+    public MenuBoard(Launch launch) {
+        this.launch = launch;
+        createBoard();
     }
 
-    private void createMainMenu() {
+    private void createBoard() {
         mainMenu = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
@@ -30,7 +30,7 @@ public class MenuBoard {
         row.add("\uD83D\uDCCA Статистика");
         row.add("\uD83D\uDCC1 Управление типами");
 
-        if (!launchCommands.isStarted()) {
+        if (!launch.isStarted()) {
             row.remove("\uD83C\uDFC1 Завершить работу");
             row.add("\uD83D\uDE80 Начать работу");
         } else {
@@ -44,8 +44,8 @@ public class MenuBoard {
         mainMenu.setResizeKeyboard(true);
     }
 
-    public ReplyKeyboardMarkup getMainMenu() {
-        createMainMenu();
+    public ReplyKeyboardMarkup getBoard() {
+        createBoard();
         return mainMenu;
     }
 

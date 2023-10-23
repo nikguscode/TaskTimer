@@ -1,56 +1,49 @@
 package com.nikguscode.TaskTimer.view;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Controller
 public class CategoryBoard {
 
-    private ReplyKeyboardMarkup replyCategoryKeyboard;
-    private InlineKeyboardButton inlineCategoryKeyboard;
+    private InlineKeyboardMarkup categoryBoard;
 
-
+    @Autowired
     public CategoryBoard() {
-        createReplyCategoryBoard();
-        createInlineCategoryBoard();
+        createBoard();
     }
 
-    private void createReplyCategoryBoard() {
+    private void createBoard() {
+        categoryBoard = new InlineKeyboardMarkup();
 
-        replyCategoryKeyboard = new ReplyKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
 
-        List<KeyboardRow> keyboard = new ArrayList<>();
+        InlineKeyboardButton addCategoryButton = new InlineKeyboardButton();
+        addCategoryButton.setText("Добавить категорию");
+        addCategoryButton.setCallbackData("add_ctg");
 
-        KeyboardRow row = new KeyboardRow();
+        InlineKeyboardButton showCategoriesButton = new InlineKeyboardButton();
+        showCategoriesButton.setText("Список созданных категорий");
+        showCategoriesButton.setCallbackData("list_of_ctg");
 
-        row.add("Добавить категорию");
-        row.add("Просмотреть категории");
-        row.add("В главное меню");
+        keyboardButtonsRow1.add(addCategoryButton);
+        keyboardButtonsRow1.add(showCategoriesButton);
 
-        keyboard.add(row);
+        rowList.add(keyboardButtonsRow1);
 
-        replyCategoryKeyboard.setKeyboard(keyboard);
-        replyCategoryKeyboard.setResizeKeyboard(true);
+        categoryBoard.setKeyboard(rowList);
     }
 
-    private void createInlineCategoryBoard() {
-
-//        InlineKeyboardMarkup categoryBoard = new InlineKeyboardMarkup();
-//
-//        InlineKeyboardButton addCategoryButton = new InlineKeyboardButton();
-//        addCategoryButton.setText("Добавить категорию");
-//
-//        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-//        keyboardButtonsRow1.add(categoryBoard);
-
-
+    public InlineKeyboardMarkup getBoard() {
+        createBoard();
+        return categoryBoard;
     }
-
-
 
 
 }

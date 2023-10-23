@@ -12,7 +12,7 @@ import java.time.Instant;
  */
 
 @Service
-public class LaunchCommands {
+public class Launch {
 
     private final TelegramData telegramData;
     private Instant startTime;
@@ -20,7 +20,7 @@ public class LaunchCommands {
     private String formattedDuration;
     private boolean isStarted;
 
-    public LaunchCommands(TelegramData telegramData) {
+    public Launch(TelegramData telegramData) {
         this.telegramData = telegramData;
     }
 
