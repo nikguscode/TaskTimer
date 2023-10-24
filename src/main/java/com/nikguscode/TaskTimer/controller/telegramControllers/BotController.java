@@ -41,6 +41,7 @@ public class BotController extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             telegramData.getMessageInfo(update);
+            telegramData.logMessageInfo(update);
             masterController.setController();
             masterController.setDatabaseController(update);
 

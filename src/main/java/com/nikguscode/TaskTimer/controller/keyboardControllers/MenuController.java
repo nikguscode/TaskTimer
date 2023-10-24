@@ -7,12 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
 @Controller
-public class MenuController implements com.nikguscode.TaskTimer.controller.keyboardControllers.Controller {
+public class MenuController implements ReplyController {
     private final TelegramData telegramData;
     private final MenuBoard menuBoard;
     private final Launch launch;
@@ -78,15 +76,9 @@ public class MenuController implements com.nikguscode.TaskTimer.controller.keybo
 
     }
 
-    public void handleCommands(Update update) {
-    }
-
     @Override
     public SendMessage sendMessage() {
         return sendMessage;
-    }
-    public EditMessageText sendEditMessage() {
-        return null;
     }
 
 }

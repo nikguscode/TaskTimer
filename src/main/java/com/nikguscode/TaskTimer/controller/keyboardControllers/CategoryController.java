@@ -22,7 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 @Getter
 @Setter
 @Slf4j
-public class CategoryController implements com.nikguscode.TaskTimer.controller.keyboardControllers.Controller {
+public class CategoryController implements ReplyController, InlineController {
 
     private final TelegramData telegramData;
     private final AddCategory addCategory;
@@ -40,6 +40,7 @@ public class CategoryController implements com.nikguscode.TaskTimer.controller.k
         this.categoryBoard = categoryBoard;
     }
 
+    @Override
     public void handleCommands() {
         sendMessage = new SendMessage();
         sendMessage.setChatId(telegramData.getChatId());
@@ -52,6 +53,7 @@ public class CategoryController implements com.nikguscode.TaskTimer.controller.k
 
     }
 
+    @Override
     public void handleCommands(Update update) {
 
         if (update.hasCallbackQuery() && telegramData.getCallbackData() != null) {
@@ -86,6 +88,7 @@ public class CategoryController implements com.nikguscode.TaskTimer.controller.k
         return sendMessage;
     }
 
+    @Override
     public EditMessageText sendEditMessage() {
         return editMessageText;
     }

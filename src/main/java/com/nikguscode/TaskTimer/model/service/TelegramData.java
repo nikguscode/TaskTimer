@@ -36,10 +36,11 @@ public class TelegramData {
         chatId = update.getMessage().getChatId();
         messageText = update.getMessage().getText();
         userName = update.getMessage().getFrom().getUserName();
-
         instant = Instant.ofEpochSecond(update.getMessage().getDate());
         getFormattedTime(instant);
+    }
 
+    public void logMessageInfo(Update update) {
         log.info("Получено сообщение: " + messageText);
     }
 
@@ -51,9 +52,7 @@ public class TelegramData {
 
     private void getFormattedTime(Instant instant) {
         ZoneId zoneId = ZoneId.of("Europe/Moscow");
-
         ZonedDateTime zonedDateTime = instant.atZone(zoneId);
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
         formattedTime = formatter.format(zonedDateTime);
     }
