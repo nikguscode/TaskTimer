@@ -1,5 +1,6 @@
 package com.nikguscode.TaskTimer.view;
 
+import com.nikguscode.TaskTimer.controller.EmojiConstants;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -22,9 +23,9 @@ public class TaskBoard {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("\uD83D\uDCCD Активная категория");
-        row.add("\uD83D\uDCC4 Список категорий");
-        row.add("\uD83C\uDFE0 Вернуться в главное меню");
+        row.add(EmojiConstants.ACTIVE_CTG_ICON + " Активная категория");
+        row.add(EmojiConstants.LIST_ICON + " Список категорий");
+        row.add(EmojiConstants.BACK_TO_MENU_ICON + " Вернуться в главное меню");
 
         keyboard.add(row);
 

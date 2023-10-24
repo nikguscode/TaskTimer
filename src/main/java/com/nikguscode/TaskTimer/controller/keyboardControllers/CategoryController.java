@@ -1,5 +1,7 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.InlineController;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
 import com.nikguscode.TaskTimer.model.dal.AddCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.view.CategoryBoard;

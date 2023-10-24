@@ -1,8 +1,8 @@
     package com.nikguscode.TaskTimer.controller;
 
     import com.nikguscode.TaskTimer.controller.keyboardControllers.CategoryController;
-    import com.nikguscode.TaskTimer.controller.keyboardControllers.InlineController;
-    import com.nikguscode.TaskTimer.controller.keyboardControllers.ReplyController;
+    import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.InlineController;
+    import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
     import com.nikguscode.TaskTimer.model.dal.AddCategory;
     import com.nikguscode.TaskTimer.model.service.TelegramData;
     import org.springframework.beans.factory.annotation.Autowired;

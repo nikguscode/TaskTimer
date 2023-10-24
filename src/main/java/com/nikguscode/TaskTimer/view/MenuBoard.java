@@ -1,5 +1,6 @@
 package com.nikguscode.TaskTimer.view;
 
+import com.nikguscode.TaskTimer.controller.EmojiConstants;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,15 +28,15 @@ public class MenuBoard {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add("\uD83D\uDCCA Статистика");
-        row.add("\uD83D\uDCC1 Управление типами");
+        row.add(EmojiConstants.STATS_ICON + " Статистика");
+        row.add(EmojiConstants.FOLDER_ICON + " Управление типами");
 
         if (!launch.isStarted()) {
-            row.remove("\uD83C\uDFC1 Завершить работу");
-            row.add("\uD83D\uDE80 Начать работу");
+            row.remove(EmojiConstants.END_ICON + " Завершить работу");
+            row.add(EmojiConstants.START_ICON + " Начать работу");
         } else {
-            row.remove("\uD83D\uDE80 Начать работу");
-            row.add("\uD83C\uDFC1 Завершить работу");
+            row.remove(EmojiConstants.START_ICON + " Начать работу");
+            row.add(EmojiConstants.END_ICON + " Завершить работу");
         }
 
         keyboard.add(row);
