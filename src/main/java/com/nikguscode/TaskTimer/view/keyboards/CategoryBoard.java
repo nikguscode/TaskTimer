@@ -1,14 +1,14 @@
-package com.nikguscode.TaskTimer.view;
+package com.nikguscode.TaskTimer.view.keyboards;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@Component
 public class CategoryBoard {
 
     private InlineKeyboardMarkup categoryBoard;
