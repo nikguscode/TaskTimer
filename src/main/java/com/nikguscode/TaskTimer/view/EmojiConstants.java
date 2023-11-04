@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.controller;
+package com.nikguscode.TaskTimer.view;
 
 import lombok.NoArgsConstructor;
 
