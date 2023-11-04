@@ -1,7 +1,7 @@
-package com.nikguscode.TaskTimer.view;
+package com.nikguscode.TaskTimer.view.keyboards;
 
-import com.nikguscode.TaskTimer.controller.EmojiConstants;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
+import com.nikguscode.TaskTimer.view.EmojiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -46,7 +46,7 @@ public class MenuBoard {
     }
 
     public ReplyKeyboardMarkup getBoard() {
-        createBoard();
+        createBoard(); // update keyboard
         return mainMenu;
     }
 

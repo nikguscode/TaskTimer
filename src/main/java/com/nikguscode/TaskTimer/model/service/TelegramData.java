@@ -9,10 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 @Service
 @Slf4j
@@ -37,10 +33,9 @@ public class TelegramData {
         messageText = update.getMessage().getText();
         userName = update.getMessage().getFrom().getUserName();
         instant = Instant.ofEpochSecond(update.getMessage().getDate());
-        getFormattedTime(instant);
     }
 
-    public void logMessageInfo(Update update) {
+    public void getLogs(Update update) {
         log.info("Получено сообщение: " + messageText);
     }
 
@@ -50,17 +45,15 @@ public class TelegramData {
         messageId = update.getCallbackQuery().getMessage().getMessageId();
     }
 
-    private void getFormattedTime(Instant instant) {
-        ZoneId zoneId = ZoneId.of("Europe/Moscow");
-        ZonedDateTime zonedDateTime = instant.atZone(zoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
-        formattedTime = formatter.format(zonedDateTime);
-    }
-
     public void getFormattedCategory() {
         String[] formattedText = messageText.split("\\s*\\|\\s*");
-        categoryName = formattedText[0];
-        categoryDescription = formattedText[1];
+
+        if (formattedText.length != 0) {
+            categoryName = formattedText[0];
+            if (formattedText.length >= 1) {
+                categoryDescription = formattedText[1];
+            }
+        }
     }
 
 }

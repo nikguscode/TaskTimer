@@ -1,9 +1,10 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.SendMessageController;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
-import com.nikguscode.TaskTimer.view.MenuBoard;
+import com.nikguscode.TaskTimer.view.keyboards.MenuBoard;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Slf4j
 @Controller
-public class MenuController implements ReplyController {
+public class MenuController implements ReplyController, SendMessageController {
     private final TelegramData telegramData;
     private final MenuBoard menuBoard;
     private final Launch launch;
@@ -34,14 +35,13 @@ public class MenuController implements ReplyController {
         switch (telegramData.getMessageText()) {
             case "/start":
                 sendMessage.setReplyMarkup(menuBoard.getBoard());
-                log.debug("Вывод клавиатуры меню");
                 sendMessage.setText("Выберите категорию: ");
                 break;
 
-            case "\uD83D\uDCCA Статистика":
+            case "\uD83D\uDCCA" + " Статистика": // icon = 📊
                 break;
 
-            case "\uD83D\uDE80 Начать работу":
+            case "\uD83D\uDE80" + " Начать работу": // icon = 🚀
                 if (!launch.isStarted()) {
                     launch.start();
                     sendMessage.setText("✅ Таймер запущен.");
@@ -51,7 +51,7 @@ public class MenuController implements ReplyController {
                 }
                 break;
 
-            case "\uD83C\uDFC1 Завершить работу":
+            case "\uD83C\uDFC1" + " Завершить работу": // icon = 🏁
                 if (launch.isStarted()) {
                     launch.stop();
                     sendMessage.setText("✅ Таймер остановлен, время работы: "
@@ -62,7 +62,7 @@ public class MenuController implements ReplyController {
                 }
                 break;
 
-            case ("\uD83C\uDFE0 Вернуться в главное меню"):
+            case ("\uD83C\uDFE0" + " Вернуться в главное меню"): // icon = 🏠
                 sendMessage.setReplyMarkup(menuBoard.getBoard());
                 sendMessage.setText("Успешно");
                 break;

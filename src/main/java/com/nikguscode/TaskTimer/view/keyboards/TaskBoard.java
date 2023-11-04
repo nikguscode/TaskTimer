@@ -1,6 +1,6 @@
-package com.nikguscode.TaskTimer.view;
+package com.nikguscode.TaskTimer.view.keyboards;
 
-import com.nikguscode.TaskTimer.controller.EmojiConstants;
+import com.nikguscode.TaskTimer.view.EmojiConstants;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
