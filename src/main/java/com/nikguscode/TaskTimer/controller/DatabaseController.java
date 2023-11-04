@@ -5,6 +5,7 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.model.dal.Add;
 import com.nikguscode.TaskTimer.model.dal.GetCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
+import com.nikguscode.TaskTimer.view.keyboards.CategoryListBoard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class DatabaseController implements SendMessageController {
     private TelegramData telegramData;
     private GetCategory getCategory;
     private CategoryController categoryController;
+    private CategoryListBoard categoryListBoard;
     private Add add;
     private SendMessage sendMessage;
 
@@ -31,9 +33,11 @@ public class DatabaseController implements SendMessageController {
     public DatabaseController(TelegramData telegramData,
                               GetCategory getCategory,
                               CategoryController categoryController,
+                              CategoryListBoard categoryListBoard,
                               Add add) {
         this.telegramData = telegramData;
         this.getCategory = getCategory;
+        this.categoryListBoard = categoryListBoard;
         this.categoryController = categoryController;
         this.add = add;
     }
@@ -48,6 +52,26 @@ public class DatabaseController implements SendMessageController {
 
             if (add.isTransacted()) {
                 sendMessage.setText("Успешно");
+                add.setTransacted(false); // указывает на проверку повторяющегося category_name
+            } else {
+                sendMessage.setText("Данная категория уже создана, попробуйте указать другое имя");
+            }
+
+        }
+
+    }
+
+    public void getCategory(Update update) {
+        sendMessage = new SendMessage();
+        sendMessage.setChatId(telegramData.getChatId());
+
+        if (categoryController.isListTransaction()) {
+            getCategory.getAllCategories();
+            categoryController.setListTransaction(false);
+
+            if (getCategory.isTransacted()) {
+                System.out.println("Успешно");
+                sendMessage.setReplyMarkup(getCategoryListBoard().getBoard());
                 add.setTransacted(false); // указывает на проверку повторяющегося category_name
             } else {
                 sendMessage.setText("Данная категория уже создана, попробуйте указать другое имя");

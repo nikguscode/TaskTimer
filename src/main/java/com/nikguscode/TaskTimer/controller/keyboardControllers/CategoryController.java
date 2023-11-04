@@ -4,6 +4,7 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.SendMessageController;
 import com.nikguscode.TaskTimer.model.dal.Add;
+import com.nikguscode.TaskTimer.model.dal.GetCategory;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.view.EmojiConstants;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryBoard;
@@ -33,18 +34,22 @@ public class CategoryController implements ReplyController, InlineController, Se
     private final Add add;
     private final CategoryBoard categoryBoard;
     private final CategoryListBoard categoryListBoard;
+    private final GetCategory getCategory;
     private final MenuBoard menuBoard;
     private boolean addTransaction;
+    private boolean listTransaction;
     private SendMessage sendMessage;
     private EditMessageText editMessageText;
 
     @Autowired
     public CategoryController(TelegramData telegramData,
+                              GetCategory getCategory,
                               Add add,
                               CategoryBoard categoryBoard,
                               CategoryListBoard categoryListBoard,
                               MenuBoard menuBoard) {
         this.telegramData = telegramData;
+        this.getCategory = getCategory;
         this.add = add;
         this.categoryBoard = categoryBoard;
         this.categoryListBoard = categoryListBoard;
@@ -66,12 +71,12 @@ public class CategoryController implements ReplyController, InlineController, Se
     @Override
     public void handleCommands(Update update) {
 
-        if (update.hasCallbackQuery() && telegramData.getCallbackData() != null) {
+        if (update.hasCallbackQuery() && update.getCallbackQuery() != null) {
             editMessageText = new EditMessageText();
             editMessageText.setChatId(telegramData.getChatId());
             editMessageText.setMessageId(telegramData.getMessageId());
 
-            switch (telegramData.getCallbackData()) {
+            switch (update.getCallbackQuery().getData()) {
                 case "add_ctg":
                     editMessageText.setText("Введите: \"Название категории | описание категории\" через \" | \" \n" +
                             "Пример: Написание кода | Отсчитывает время написания калькулятора");
@@ -79,7 +84,9 @@ public class CategoryController implements ReplyController, InlineController, Se
                     break;
 
                 case "list_of_ctg":
+                    listTransaction = true;
                     editMessageText.setText("Список категорий: ");
+                    //sendMessage.setReplyMarkup(categoryListBoard.getBoard());
                     break;
 
                 case "first_category",

@@ -91,14 +91,17 @@ public class MasterController {
                 currentInlineController = categoryInlineController;
                 currentInlineController.handleCommands(update);
 
-                if (telegramData.getCallbackData().equals("menu_btn")) {
+                if (update.getCallbackQuery().getData().equals("menu_btn")) {
                     currentReplyController = menuReplyController;
+                }
+
+                if (update.getCallbackQuery().getData().equals("list_of_ctg")) {
+                    databaseController.getCategory(update);
                 }
 
             }
 
             if (update.getCallbackQuery().getData().equals("add_ctg")) {
-                System.out.println(update.getCallbackQuery().getData());
                 currentMessage = databaseMessage;
             }
 

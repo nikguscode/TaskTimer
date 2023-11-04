@@ -53,4 +53,32 @@ public class GetCategory {
             throw new RuntimeException("Ошибка в GetCategory: " + e.getMessage(), e);
         }
     }
+
+    public void getAllCategories() {
+        Configuration configuration = new Configuration();
+        configuration.configure();
+
+        try {
+            SessionFactory sessionFactory = configuration.buildSessionFactory();
+            Session session = sessionFactory.openSession();
+            session.beginTransaction();
+
+            String hql = "SELECT c.categoryName FROM Category c WHERE c.userId = :userId";
+            Query query = session.createQuery(hql);
+            query.setParameter("userId", telegramData.getChatId());
+            result = query.list();
+
+            if (!result.isEmpty()) {
+                isTransacted = true;
+            } else {
+                session.close();
+                log.warn("[Active Category] У пользователя нет созданных категорий");
+            }
+
+        } catch (Exception e) {
+            log.error("Ошибка в GetAllCategory: ", e);
+            throw new RuntimeException("Ошибка в GetAllCategory: " + e.getMessage(), e);
+        }
+    }
+
 }

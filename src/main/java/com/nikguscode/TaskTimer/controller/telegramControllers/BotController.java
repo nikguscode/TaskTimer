@@ -70,10 +70,18 @@ public class BotController extends TelegramLongPollingBot {
             masterController.setCallbackController(update);
 
             try {
+
                 if (masterController.editMessage().getText() != null) {
                     log.info("[Callback] Отправлено сообщение: " + masterController.editMessage().getText());
                     execute(masterController.editMessage());
                 }
+
+                if (masterController.sendMessage().getText() != null &&
+                update.getCallbackQuery().getData().equals("list_of_ctg")) {
+                    log.info("[Callback] Отправлено сообщение: " + masterController.sendMessage().getText());
+                    execute(masterController.sendMessage());
+                }
+
             } catch (TelegramApiException e) {
                 log.error("[Callback] Ошибка Telegram API при отправке сообщения", e);
                 throw new RuntimeException("Ошибка Telegram: " + e.getMessage(), e);

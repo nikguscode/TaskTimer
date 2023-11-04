@@ -39,6 +39,10 @@ public class MenuController implements ReplyController, SendMessageController {
                 break;
 
             case "\uD83D\uDCCA" + " Статистика": // icon = 📊
+
+
+
+
                 break;
 
             case "\uD83D\uDE80" + " Начать работу": // icon = 🚀

@@ -1,5 +1,6 @@
 package com.nikguscode.TaskTimer.view.keyboards;
 
+import com.nikguscode.TaskTimer.model.service.CategoryTransformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -10,42 +11,31 @@ import java.util.List;
 
 @Component
 public class CategoryListBoard {
-    private final InlineKeyboardMarkup categoryListBoard;
-
-    private final List<String> categoryTexts = List.of(
-            "Категория 1",
-            "Категория 2",
-            "Категория 3",
-            "Категория 4",
-            "Категория 5",
-            "Категория 6"
-    );
-
-    private final List<String> categoryCallbackData = List.of(
-            "first_category",
-            "second_category",
-            "third_category",
-            "fourth_category",
-            "fifth_category",
-            "sixth_category"
-    );
+    private InlineKeyboardMarkup categoryListBoard;
+    private final CategoryTransformation categoryTransformation;
 
     @Autowired
-    public CategoryListBoard() {
-        categoryListBoard = createBoard();
+    public CategoryListBoard(CategoryTransformation categoryTransformation) {
+        this.categoryTransformation = categoryTransformation;
+        createBoard();
     }
 
-    private InlineKeyboardMarkup createBoard() {
+    private void createBoard() {
+        categoryListBoard = new InlineKeyboardMarkup();
+
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 
-        for (int i = 0; i < categoryTexts.size(); i++) {
-            InlineKeyboardButton categoryButton = new InlineKeyboardButton();
-            categoryButton.setText(categoryTexts.get(i));
-            categoryButton.setCallbackData(categoryCallbackData.get(i));
+        if (categoryTransformation.getCategoryList() != null) {
+            categoryTransformation.transformToString();
+            for (int i = 0; i < categoryTransformation.getCategoryList().size(); i++) {
+                InlineKeyboardButton categoryButton = new InlineKeyboardButton();
+                categoryButton.setText(categoryTransformation.getCategoryList().get(i));
+                categoryButton.setCallbackData("category" + categoryTransformation.getCategoryList().get(i));
 
-            List<InlineKeyboardButton> row = new ArrayList<>();
-            row.add(categoryButton);
-            rowList.add(row);
+                List<InlineKeyboardButton> row = new ArrayList<>();
+                row.add(categoryButton);
+                rowList.add(row);
+            }
         }
 
         rowList.add(createNavigationRow());
@@ -53,8 +43,6 @@ public class CategoryListBoard {
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         markup.setKeyboard(rowList);
-
-        return markup;
     }
 
     private List<InlineKeyboardButton> createNavigationRow() {
@@ -85,6 +73,7 @@ public class CategoryListBoard {
     }
 
     public InlineKeyboardMarkup getBoard() {
+        createBoard(); // update board
         return categoryListBoard;
     }
 }
