@@ -35,7 +35,7 @@ public class TelegramData {
         instant = Instant.ofEpochSecond(update.getMessage().getDate());
     }
 
-    public void getLogs(Update update) {
+    public void getLogs() {
         log.info("Получено сообщение: " + messageText);
     }
 
@@ -50,7 +50,7 @@ public class TelegramData {
 
         if (formattedText.length != 0) {
             categoryName = formattedText[0];
-            if (formattedText.length >= 1) {
+            if (formattedText.length > 1) {
                 categoryDescription = formattedText[1];
             }
         }
