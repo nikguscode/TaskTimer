@@ -1,6 +1,6 @@
 package com.nikguscode.TaskTimer.view.keyboards;
 
-import com.nikguscode.TaskTimer.model.service.CategoryTransformation;
+import com.nikguscode.TaskTimer.model.service.CategoryFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -12,38 +12,41 @@ import java.util.List;
 @Component
 public class CategoryListBoard {
     private InlineKeyboardMarkup categoryListBoard;
-    private final CategoryTransformation categoryTransformation;
+    private final CategoryFilter categoryFilter;
 
     @Autowired
-    public CategoryListBoard(CategoryTransformation categoryTransformation) {
-        this.categoryTransformation = categoryTransformation;
+    public CategoryListBoard(CategoryFilter categoryFilter) {
+        this.categoryFilter = categoryFilter;
         createBoard();
     }
 
     private void createBoard() {
         categoryListBoard = new InlineKeyboardMarkup();
-
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 
-        if (categoryTransformation.getCategoryList() != null) {
-            categoryTransformation.transformToString();
-            for (int i = 0; i < categoryTransformation.getCategoryList().size(); i++) {
+        if (categoryFilter.getCurrentCategories() != null) {
+            int count = 1;
+
+            for (String currentCategory : categoryFilter.getCurrentCategories()) {
                 InlineKeyboardButton categoryButton = new InlineKeyboardButton();
-                categoryButton.setText(categoryTransformation.getCategoryList().get(i));
-                categoryButton.setCallbackData("category" + categoryTransformation.getCategoryList().get(i));
+
+                categoryButton.setText(currentCategory);
+                categoryButton.setCallbackData("category_btn_" + count);
 
                 List<InlineKeyboardButton> row = new ArrayList<>();
                 row.add(categoryButton);
                 rowList.add(row);
+
+                count ++;
             }
         }
 
         rowList.add(createNavigationRow());
         rowList.add(createMenuButtonRow());
 
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        markup.setKeyboard(rowList);
+        categoryListBoard.setKeyboard(rowList);
     }
+
 
     private List<InlineKeyboardButton> createNavigationRow() {
         InlineKeyboardButton previousPage = new InlineKeyboardButton();
@@ -76,4 +79,5 @@ public class CategoryListBoard {
         createBoard(); // update board
         return categoryListBoard;
     }
+
 }
