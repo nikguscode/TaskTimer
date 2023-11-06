@@ -4,8 +4,10 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.CategoryControlle
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.InlineController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.SendMessageController;
+import com.nikguscode.TaskTimer.model.service.CategoryFilter;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.view.EmojiConstants;
+import com.nikguscode.TaskTimer.view.keyboards.CategoryEditBoard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class MasterController {
     private SendMessageController currentMessage;
     private final DatabaseController databaseController;
     private final CategoryController categoryController;
+    private CategoryFilter categoryFilter;
+    private CategoryEditBoard categoryEditBoard;
 
     @Autowired
     public MasterController(TelegramData telegramData,
@@ -42,7 +46,8 @@ public class MasterController {
                             @Qualifier("taskController") ReplyController taskReplyController,
                             @Qualifier("taskController") SendMessageController taskMessage,
                             @Qualifier("databaseController") SendMessageController databaseMessage,
-                            DatabaseController databaseController) {
+                            DatabaseController databaseController,
+                            CategoryFilter categoryFilter) {
         this.telegramData = telegramData;
         this.currentReplyController = menuReplyController;
         this.menuReplyController = menuReplyController;
@@ -57,9 +62,10 @@ public class MasterController {
         this.databaseMessage = databaseMessage;
         this.databaseController = databaseController;
         this.categoryController = categoryController;
+        this.categoryFilter = categoryFilter;
     }
 
-    public void setReplyController(Update update) {
+    public void setReplyController() {
 
         if (telegramData.getMessageText().equals(EmojiConstants.FOLDER_ICON + " Управление типами")) {
             currentReplyController = taskReplyController;
@@ -87,21 +93,33 @@ public class MasterController {
     public void setCallbackController(Update update) {
         if (update.hasCallbackQuery()) {
 
-            if (currentReplyController == categoryReplyController) {
-                currentInlineController = categoryInlineController;
-                currentInlineController.handleCommands(update);
+            if (update.getCallbackQuery().getData().equals("menu_btn")) {
+                currentReplyController = menuReplyController;
+            }
 
-                if (update.getCallbackQuery().getData().equals("menu_btn")) {
-                    currentReplyController = menuReplyController;
+            if (update.getCallbackQuery().getData().equals("list_of_ctg")) {
+                currentMessage = databaseMessage;
+                currentInlineController = databaseController;
+                categoryController.handleCommands(update);
+                databaseController.getCategory();
+            }
+
+            if (categoryFilter.getCurrentCategories() != null) {
+                int length = categoryFilter.getCurrentCategories().size(); // get size of current page
+
+                for (int currentIndex = 1; currentIndex < length; currentIndex++) {
+
+                    if (update.getCallbackQuery().getData().equals("category_btn_" + currentIndex)) {
+                        currentInlineController = categoryInlineController;
+                        categoryController.sendSelectedCategory();
+                    }
+
+                    currentIndex++;
                 }
-
-                if (update.getCallbackQuery().getData().equals("list_of_ctg")) {
-                    databaseController.getCategory(update);
-                }
-
             }
 
             if (update.getCallbackQuery().getData().equals("add_ctg")) {
+                categoryController.handleCommands(update);
                 currentMessage = databaseMessage;
             }
 
