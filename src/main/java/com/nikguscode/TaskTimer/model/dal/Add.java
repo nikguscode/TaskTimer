@@ -41,22 +41,22 @@ public class Add {
             session.beginTransaction();
 
             String hql = "FROM Category c WHERE c.categoryName LIKE :searchText";
-            Query query = session.createQuery(hql);
+            Query<Category> query = session.createQuery(hql, Category.class);
             query.setParameter("searchText", telegramData.getCategoryName());
-            List<Category> result = query.list();
+            List<Category> categoryName = query.list();
 
             if (update.hasMessage()) {
                 telegramData.getFormattedCategory();
             }
 
-            if (result.isEmpty()) {
+            if (categoryName.isEmpty()) {
                 Category category = Category.builder()
                         .categoryName(telegramData.getCategoryName())
                         .categoryDescription(telegramData.getCategoryDescription())
                         .userId(telegramData.getChatId())
                         .isActive(false)
                         .build();
-                session.save(category);
+                session.persist(category);
 
                 session.getTransaction().commit();
                 session.close();
@@ -65,52 +65,6 @@ public class Add {
                 session.close();
                 log.warn("[Adding Category] Данная категория уже создана");
             }
-
-        } catch (Exception e) {
-            log.error("Ошибка в SessionFactory: ", e);
-            throw new RuntimeException("Ошибка в SessionFactory: " + e.getMessage(), e);
-        }
-    }
-
-    public void addSession() {
-        Configuration configuration = new Configuration();
-        configuration.configure();
-
-        try {
-            SessionFactory sessionFactory = configuration.buildSessionFactory();
-            Session session = sessionFactory.openSession();
-            session.beginTransaction();
-
-            String startTimeHQL = "FROM Session s WHERE s.startTime LIKE :searchText";
-            String endTimeHQL = "FROM Session s WHERE s.endTime LIKE :searchText";
-
-//            if (launch.isStarted()) {
-//                com.nikguscode.TaskTimer.model.entity.Session currentSession =
-//                        com.nikguscode.TaskTimer.model.entity.Session.builder()
-//                        .userId(telegramData.getChatId())
-//                                .taskName()
-//            }
-
-//            Query query = session.createQuery(endTimeHQL);
-//            query.setParameter("searchText", telegramData.getCategoryName());
-//            List<Category> result = query.list();
-
-//            if (result.isEmpty()) {
-//                Category category = Category.builder()
-//                        .categoryName(telegramData.getCategoryName())
-//                        .categoryDescription(telegramData.getCategoryDescription())
-//                        .userId(telegramData.getChatId())
-//                        .isActive(false)
-//                        .build();
-//                session.save(category);
-//
-//                session.getTransaction().commit();
-//                session.close();
-//                isTransacted = true;
-//            } else {
-//                session.close();
-//                log.warn("[Adding Category] Данная категория уже создана");
-//            }
 
         } catch (Exception e) {
             log.error("Ошибка в SessionFactory: ", e);
