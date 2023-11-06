@@ -1,6 +1,5 @@
 package com.nikguscode.TaskTimer.model.dal;
 
-import com.nikguscode.TaskTimer.model.entity.Category;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +20,7 @@ public class GetCategory {
 
     private TelegramData telegramData;
     private boolean isTransacted;
-    private List<Category> result;
+    private List<String> result;
 
     public GetCategory(TelegramData telegramData) {
         this.telegramData = telegramData;
@@ -37,7 +36,7 @@ public class GetCategory {
             session.beginTransaction();
 
             String hql = "SELECT c.categoryName FROM Category c WHERE c.userId = :userId AND c.isActive = true";
-            Query query = session.createQuery(hql);
+            Query<String> query = session.createQuery(hql);
             query.setParameter("userId", telegramData.getChatId());
             result = query.list();
 
@@ -64,7 +63,7 @@ public class GetCategory {
             session.beginTransaction();
 
             String hql = "SELECT c.categoryName FROM Category c WHERE c.userId = :userId";
-            Query query = session.createQuery(hql);
+            Query<String> query = session.createQuery(hql);
             query.setParameter("userId", telegramData.getChatId());
             result = query.list();
 
