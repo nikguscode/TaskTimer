@@ -52,5 +52,4 @@ public class CategoryBoard {
         return categoryBoard;
     }
 
-
 }
