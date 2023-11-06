@@ -41,13 +41,13 @@ public class BotController extends TelegramLongPollingBot {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             telegramData.getMessageInfo(update);
-            telegramData.getLogs(update);
-            masterController.setReplyController(update);
+            telegramData.getLogs();
+            masterController.setReplyController();
             masterController.setDatabaseController(update);
 
                 try {
                     if (masterController.sendMessage() != null) {
-                        if (masterController.sendMessage().getText() != null) {
+                        if (masterController.sendMessage().getText() != null && !update.hasCallbackQuery()) {
                             log.info("Отправлено сообщение: " + masterController.sendMessage().getText());
                             execute(masterController.sendMessage());
                         }
@@ -71,15 +71,19 @@ public class BotController extends TelegramLongPollingBot {
 
             try {
 
-                if (masterController.editMessage().getText() != null) {
-                    log.info("[Callback] Отправлено сообщение: " + masterController.editMessage().getText());
-                    execute(masterController.editMessage());
+                if (masterController.editMessage() != null) {
+                    if (masterController.editMessage().getText() != null) {
+                        log.info("[Callback] Отправлено сообщение: " + masterController.editMessage().getText());
+                        execute(masterController.editMessage());
+                    }
                 }
 
-                if (masterController.sendMessage().getText() != null &&
-                update.getCallbackQuery().getData().equals("list_of_ctg")) {
-                    log.info("[Callback] Отправлено сообщение: " + masterController.sendMessage().getText());
-                    execute(masterController.sendMessage());
+                if (masterController.sendMessage() != null) {
+                    if (masterController.sendMessage().getText() != null &&
+                            update.getCallbackQuery().getData().equals("list_of_ctg")) {
+                        log.info("[Callback] Отправлено сообщение: " + masterController.sendMessage().getText());
+                        execute(masterController.sendMessage());
+                    }
                 }
 
             } catch (TelegramApiException e) {
