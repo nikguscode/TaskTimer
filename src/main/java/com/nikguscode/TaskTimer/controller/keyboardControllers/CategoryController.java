@@ -5,9 +5,11 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.SendMessageController;
 import com.nikguscode.TaskTimer.model.dal.Add;
 import com.nikguscode.TaskTimer.model.dal.GetCategory;
+import com.nikguscode.TaskTimer.model.service.CategoryFilter;
 import com.nikguscode.TaskTimer.model.service.TelegramData;
 import com.nikguscode.TaskTimer.view.EmojiConstants;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryBoard;
+import com.nikguscode.TaskTimer.view.keyboards.CategoryEditBoard;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryListBoard;
 import com.nikguscode.TaskTimer.view.keyboards.MenuBoard;
 import lombok.Getter;
@@ -36,20 +38,26 @@ public class CategoryController implements ReplyController, InlineController, Se
     private final CategoryListBoard categoryListBoard;
     private final GetCategory getCategory;
     private final MenuBoard menuBoard;
+    private CategoryFilter categoryFilter;
     private boolean addTransaction;
     private boolean listTransaction;
     private SendMessage sendMessage;
     private EditMessageText editMessageText;
+    private CategoryEditBoard categoryEditBoard;
 
     @Autowired
     public CategoryController(TelegramData telegramData,
                               GetCategory getCategory,
+                              CategoryFilter categoryFilter,
+                              CategoryEditBoard categoryEditBoard,
                               Add add,
                               CategoryBoard categoryBoard,
                               CategoryListBoard categoryListBoard,
                               MenuBoard menuBoard) {
         this.telegramData = telegramData;
+        this.categoryEditBoard = categoryEditBoard;
         this.getCategory = getCategory;
+        this.categoryFilter = categoryFilter;
         this.add = add;
         this.categoryBoard = categoryBoard;
         this.categoryListBoard = categoryListBoard;
@@ -66,6 +74,15 @@ public class CategoryController implements ReplyController, InlineController, Se
             sendMessage.setReplyMarkup(categoryBoard.getBoard());
         }
 
+    }
+
+    public void sendSelectedCategory() {
+        editMessageText = new EditMessageText();
+        editMessageText.setChatId(telegramData.getChatId());
+        editMessageText.setMessageId(telegramData.getMessageId());
+
+        editMessageText.setText("Выберите операцию:");
+        editMessageText.setReplyMarkup(categoryEditBoard.getBoard());
     }
 
     @Override
@@ -85,19 +102,6 @@ public class CategoryController implements ReplyController, InlineController, Se
 
                 case "list_of_ctg":
                     listTransaction = true;
-                    editMessageText.setText("Список категорий: ");
-                    //sendMessage.setReplyMarkup(categoryListBoard.getBoard());
-                    break;
-
-                case "first_category",
-                        "second_category",
-                        "third_category",
-                        "fourth_category",
-                        "fifth_category",
-                        "sixth_category":
-
-
-
                     break;
 
                 case "next_page":
