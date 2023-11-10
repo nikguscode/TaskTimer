@@ -1,7 +1,8 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces;
 
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.springframework.context.annotation.Configuration;
 
-public interface ReplyController {
+@Configuration
+public interface CommandHandler {
     void handleCommands();
 }
