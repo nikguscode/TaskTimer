@@ -1,16 +1,18 @@
-package com.nikguscode.TaskTimer.model.service.strategy;
+package com.nikguscode.TaskTimer.controller.strategy;
 
-import com.nikguscode.TaskTimer.controller.MasterController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.CategoryController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.CommandHandler;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.EditMessage;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.UCommandHandler;
+import com.nikguscode.TaskTimer.controller.strategy.interfaces.InlineStrategy;
+import com.nikguscode.TaskTimer.controller.strategy.interfaces.ReplyStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 
-@Service
-public class CategoryStrategy implements ControllerStrategy {
+@Controller
+public class CategoryStrategy implements ReplyStrategy, InlineStrategy {
 
-    private MasterController masterController;
     private final CategoryController categoryController;
 
     @Autowired
@@ -25,6 +27,16 @@ public class CategoryStrategy implements ControllerStrategy {
 
     @Override
     public MessageSender getMessageSender() {
+        return categoryController;
+    }
+
+    @Override
+    public UCommandHandler getUCommandHandler() {
+        return categoryController;
+    }
+
+    @Override
+    public EditMessage getEditSender() {
         return categoryController;
     }
 

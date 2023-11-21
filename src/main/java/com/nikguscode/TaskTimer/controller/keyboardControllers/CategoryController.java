@@ -1,17 +1,15 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
-import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.InlineController;
-import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
-import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.SendMessageController;
-import com.nikguscode.TaskTimer.model.dal.Add;
-import com.nikguscode.TaskTimer.model.dal.GetCategory;
-import com.nikguscode.TaskTimer.model.service.CategoryFilter;
-import com.nikguscode.TaskTimer.model.service.TelegramData;
-import com.nikguscode.TaskTimer.view.EmojiConstants;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.*;
+import com.nikguscode.TaskTimer.model.PhraseConstants;
+import com.nikguscode.TaskTimer.model.service.*;
+import com.nikguscode.TaskTimer.model.service.crud.AddCategory;
+import com.nikguscode.TaskTimer.model.service.crud.GetCategory;
+import com.nikguscode.TaskTimer.model.service.strategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryBoard;
-import com.nikguscode.TaskTimer.view.keyboards.CategoryEditBoard;
-import com.nikguscode.TaskTimer.view.keyboards.CategoryListBoard;
-import com.nikguscode.TaskTimer.view.keyboards.MenuBoard;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,99 +28,70 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Getter
 @Setter
 @Slf4j
-public class CategoryController implements ReplyController, InlineController, SendMessageController {
+public class CategoryController implements CommandHandler, MessageSender, UCommandHandler, EditMessage {
 
-    private final TelegramData telegramData;
-    private final Add add;
-    private final CategoryBoard categoryBoard;
-    private final CategoryListBoard categoryListBoard;
+    private final BotData botData;
+    private final BotResponse botResponse;
+    private final BotConnection botConnection;
+    private final Logging logging;
+    private final MessageInterceptor messageInterceptor;
     private final GetCategory getCategory;
-    private final MenuBoard menuBoard;
-    private CategoryFilter categoryFilter;
-    private boolean addTransaction;
-    private boolean listTransaction;
+    private final AddCategory addCategory;
+    private final ListOfCategories listOfCategories;
+    private final CategoryBoard categoryBoard;
     private SendMessage sendMessage;
-    private EditMessageText editMessageText;
-    private CategoryEditBoard categoryEditBoard;
+    private EditMessageText editMessage;
 
     @Autowired
-    public CategoryController(TelegramData telegramData,
+    public CategoryController(BotData botData,
+                              BotResponse botResponse,
+                              BotConnection botConnection,
+                              Logging logging,
+                              MessageInterceptor messageInterceptor,
                               GetCategory getCategory,
-                              CategoryFilter categoryFilter,
-                              CategoryEditBoard categoryEditBoard,
-                              Add add,
-                              CategoryBoard categoryBoard,
-                              CategoryListBoard categoryListBoard,
-                              MenuBoard menuBoard) {
-        this.telegramData = telegramData;
-        this.categoryEditBoard = categoryEditBoard;
+                              AddCategory addCategory,
+                              ListOfCategories listOfCategories,
+                              CategoryBoard categoryBoard) {
+        this.botData = botData;
+        this.botResponse = botResponse;
+        this.botConnection = botConnection;
+        this.logging = logging;
+        this.messageInterceptor = messageInterceptor;
         this.getCategory = getCategory;
-        this.categoryFilter = categoryFilter;
-        this.add = add;
+        this.addCategory = addCategory;
+        this.listOfCategories = listOfCategories;
         this.categoryBoard = categoryBoard;
-        this.categoryListBoard = categoryListBoard;
-        this.menuBoard = menuBoard;
+
+        sendMessage = new SendMessage();
     }
 
     @Override
     public void handleCommands() {
-        sendMessage = new SendMessage();
-        sendMessage.setChatId(telegramData.getChatId());
-
-        if (telegramData.getMessageText().equals(EmojiConstants.LIST_ICON + " Список категорий")) { // icon = 📄
-            sendMessage.setText("Выбрана категория: список категорий");
-            sendMessage.setReplyMarkup(categoryBoard.getBoard());
+        if (botData.getMessageText().equals(PhraseConstants.CATEGORY_LIST)) {
+            botResponse.inlineResponse(
+                    sendMessage,
+                    PhraseConstants.SELECTED_LIST_OF_CATEGORY,
+                    categoryBoard.getBoard()
+            );
+        } else {
+            logging.receivedUndefinedCommand(this.getClass());
+            sendMessage.setText(Logging.notFoundedCommand);
         }
-
-    }
-
-    public void sendSelectedCategory() {
-        editMessageText = new EditMessageText();
-        editMessageText.setChatId(telegramData.getChatId());
-        editMessageText.setMessageId(telegramData.getMessageId());
-
-        editMessageText.setText("Выберите операцию:");
-        editMessageText.setReplyMarkup(categoryEditBoard.getBoard());
     }
 
     @Override
     public void handleCommands(Update update) {
-
         if (update.hasCallbackQuery() && update.getCallbackQuery() != null) {
-            editMessageText = new EditMessageText();
-            editMessageText.setChatId(telegramData.getChatId());
-            editMessageText.setMessageId(telegramData.getMessageId());
+            editMessage = new EditMessageText();
+            botConnection.editMessageConnection(editMessage, update);
 
-            switch (update.getCallbackQuery().getData()) {
-                case "add_ctg":
-                    editMessageText.setText("Введите: \"Название категории | описание категории\" через \" | \" \n" +
-                            "Пример: Написание кода | Отсчитывает время написания калькулятора");
-                    addTransaction = true;
-                    break;
-
-                case "list_of_ctg":
-                    listTransaction = true;
-                    break;
-
-                case "next_page":
-
-                    break;
-
-                case "previous_page":
-
-                    break;
-
-                case "menu_btn":
-                    editMessageText.setText("Успешно");
-                    sendMessage.setReplyMarkup(menuBoard.getBoard());
-                    break;
-
-                default:
-                    log.warn("Не найдена команда в CategoryController");
-                    sendMessage.setText("""
-                            ❌ Кажется, указанная команда не найдена.\s
-                            ❓ Используйте "/start\"""");
-                    break;
+            if (update.getCallbackQuery().getData().equals(PhraseConstants.CB_ADD_CATEGORY)) {
+                editMessage.setText(PhraseConstants.ADD_CATEGORY_RESPONSE);
+                botData.setInputWaiting(true);
+                sendMessage = messageInterceptor.getSendMessage();
+            } else {
+                logging.receivedUndefinedCommand(this.getClass());
+                sendMessage.setText(Logging.notFoundedCommand);
             }
 
         }
@@ -134,8 +103,8 @@ public class CategoryController implements ReplyController, InlineController, Se
     }
 
     @Override
-    public EditMessageText sendEditMessage() {
-        return editMessageText;
+    public EditMessageText editMessage() {
+        return editMessage;
     }
 
 }

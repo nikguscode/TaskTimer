@@ -1,89 +1,125 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
-import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.ReplyController;
-import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.SendMessageController;
-import com.nikguscode.TaskTimer.model.service.TelegramData;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.CommandHandler;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.EditMessage;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.UCommandHandler;
+import com.nikguscode.TaskTimer.model.PhraseConstants;
+import com.nikguscode.TaskTimer.model.service.Logging;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.MenuBoard;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
 @Controller
-public class MenuController implements ReplyController, SendMessageController {
-    private final TelegramData telegramData;
-    private final MenuBoard menuBoard;
+public class MenuController implements CommandHandler, MessageSender, UCommandHandler, EditMessage {
+    private final BotData botData;
+    private final BotResponse botResponse;
+    private final BotConnection botConnection;
+    private final Logging logging;
     private final Launch launch;
-    private SendMessage sendMessage;
+    private final MenuBoard menuBoard;
+    private final SendMessage sendMessage;
+    private EditMessageText editMessage;
 
     @Autowired
-    public MenuController(TelegramData telegramData,
-                          MenuBoard menuBoard,
-                          Launch launch) {
-        this.telegramData = telegramData;
-        this.menuBoard = menuBoard;
+    public MenuController(BotData botData,
+                          BotResponse botResponse,
+                          BotConnection botConnection,
+                          Logging logging,
+                          Launch launch,
+                          MenuBoard menuBoard) {
+        this.botData = botData;
+        this.botResponse = botResponse;
+        this.botConnection = botConnection;
+        this.logging = logging;
         this.launch = launch;
-    }
-
-    public void handleCommands() {
+        this.menuBoard = menuBoard;
 
         sendMessage = new SendMessage();
-        sendMessage.setChatId(telegramData.getChatId());
+    }
 
-        switch (telegramData.getMessageText()) {
-            case "/start":
-                sendMessage.setReplyMarkup(menuBoard.getBoard());
-                sendMessage.setText("Выберите категорию: ");
+    @Override
+    public void handleCommands() {
+        switch (botData.getMessageText()) {
+            case (PhraseConstants.RESTART_BOT_CMD):
+                botResponse.replyResponse(sendMessage, PhraseConstants.SELECT_CATEGORY, menuBoard.getBoard());
                 break;
 
-            case "\uD83D\uDCCA" + " Статистика": // icon = 📊
-
-
-
-
+            case (PhraseConstants.STATISTICS):
                 break;
 
-            case "\uD83D\uDE80" + " Начать работу": // icon = 🚀
+            case (PhraseConstants.START_TIMER):
                 if (!launch.isStarted()) {
                     launch.start();
-                    sendMessage.setText("✅ Таймер запущен.");
-                    sendMessage.setReplyMarkup(menuBoard.getBoard());
+                    botResponse.replyResponse(sendMessage, PhraseConstants.STARTED_TIMER, menuBoard.getBoard());
                 } else {
-                    sendMessage.setText("❌ Ошибка. Кажется, таймер уже запущен.");
+                    botResponse.replyResponse(sendMessage, PhraseConstants.ERROR_STARTED_TIMER);
                 }
                 break;
 
-            case "\uD83C\uDFC1" + " Завершить работу": // icon = 🏁
+            case (PhraseConstants.STOP_TIMER):
                 if (launch.isStarted()) {
                     launch.stop();
-                    sendMessage.setText("✅ Таймер остановлен, время работы: "
-                            + launch.getFormattedDuration());
-                    sendMessage.setReplyMarkup(menuBoard.getBoard());
+                    botResponse.replyResponse(
+                            sendMessage,
+                            PhraseConstants.STOPPED_TIMER + launch.getFormattedDuration(),
+                            menuBoard.getBoard()
+                    );
                 } else {
-                    sendMessage.setText("❌ Ошибка. Кажется, Вы ещё не запускали таймер.");
+                    botResponse.replyResponse(
+                            sendMessage,
+                            PhraseConstants.ERROR_STOPPED_TIMER
+                    );
                 }
                 break;
 
-            case ("\uD83C\uDFE0" + " Вернуться в главное меню"): // icon = 🏠
-                sendMessage.setReplyMarkup(menuBoard.getBoard());
-                sendMessage.setText("Успешно");
+            case (PhraseConstants.BACK_TO_MENU):
+                botResponse.replyResponse(sendMessage, PhraseConstants.SUCCESSFULLY, menuBoard.getBoard());
                 break;
 
             default:
-                log.warn("Не найдена команда в MenuController, либо не доступна в текущем сценарии");
-                sendMessage.setText("""
-                        ❌ Кажется, указанная команда не найдена.\s
-                        ❓ Используйте "/start\"""");
+                logging.receivedUndefinedCommand(this.getClass());
+                sendMessage.setText(Logging.notFoundedCommand);
                 break;
         }
+    }
 
+    @Override
+    public void handleCommands(Update update) {
+        if (update.hasCallbackQuery()) {
+            editMessage = new EditMessageText();
+            botConnection.editMessageConnection(editMessage, update);
+
+            if (update.getCallbackQuery().getData().equals(PhraseConstants.CB_BACK_TO_MENU)) {
+                botResponse.replyResponse(
+                        editMessage,
+                        sendMessage,
+                        PhraseConstants.SUCCESSFULLY,
+                        PhraseConstants.SELECT_CATEGORY,
+                        menuBoard.getBoard()
+                );
+            }
+
+        }
     }
 
     @Override
     public SendMessage sendMessage() {
         return sendMessage;
+    }
+
+    @Override
+    public EditMessageText editMessage() {
+        return editMessage;
     }
 
 }

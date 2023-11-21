@@ -3,13 +3,10 @@ package com.nikguscode.TaskTimer.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Getter
-@Setter
 @Entity
 @Table(name = "category")
+@Getter
+@Setter
 public class Category {
 
     @Id

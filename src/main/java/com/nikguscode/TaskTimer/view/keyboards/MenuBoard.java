@@ -1,7 +1,7 @@
 package com.nikguscode.TaskTimer.view.keyboards;
 
+import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
-import com.nikguscode.TaskTimer.view.EmojiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -28,15 +28,15 @@ public class MenuBoard {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add(EmojiConstants.STATS_ICON + " Статистика");
-        row.add(EmojiConstants.FOLDER_ICON + " Управление типами");
+        row.add(PhraseConstants.STATISTICS);
+        row.add(PhraseConstants.TYPE_MANAGEMENT);
 
         if (!launch.isStarted()) {
-            row.remove(EmojiConstants.END_ICON + " Завершить работу");
-            row.add(EmojiConstants.START_ICON + " Начать работу");
+            row.remove(PhraseConstants.STOP_TIMER);
+            row.add(PhraseConstants.START_TIMER);
         } else {
-            row.remove(EmojiConstants.START_ICON + " Начать работу");
-            row.add(EmojiConstants.END_ICON + " Завершить работу");
+            row.remove(PhraseConstants.START_TIMER);
+            row.add(PhraseConstants.STOP_TIMER);
         }
 
         keyboard.add(row);

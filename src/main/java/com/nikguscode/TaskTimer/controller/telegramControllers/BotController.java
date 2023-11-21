@@ -1,7 +1,9 @@
 package com.nikguscode.TaskTimer.controller.telegramControllers;
 
-import com.nikguscode.TaskTimer.controller.MasterController;
-import com.nikguscode.TaskTimer.model.service.TelegramData;
+import com.nikguscode.TaskTimer.controller.InlineController;
+import com.nikguscode.TaskTimer.controller.ReplyController;
+import com.nikguscode.TaskTimer.model.service.MessageInterceptor;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,16 +16,22 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class BotController extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
-    private final TelegramData telegramData;
-    private final MasterController masterController;
+    private final BotData botData;
+    private final ReplyController replyController;
+    private final MessageInterceptor messageInterceptor;
+    private final InlineController inlineController;
 
     @Autowired
     public BotController(BotConfig botConfig,
-                         TelegramData telegramData,
-                         MasterController masterController) {
+                         BotData botData,
+                         ReplyController replyController,
+                         InlineController inlineController,
+                         MessageInterceptor messageInterceptor) {
         this.botConfig = botConfig;
-        this.telegramData = telegramData;
-        this.masterController = masterController;
+        this.botData = botData;
+        this.replyController = replyController;
+        this.messageInterceptor = messageInterceptor;
+        this.inlineController = inlineController;
     }
 
     @Override
@@ -40,16 +48,19 @@ public class BotController extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            telegramData.getMessageInfo(update);
-            telegramData.getLogs();
-            masterController.setReplyController();
-            masterController.setDatabaseController(update);
+            botData.getMessageInfo(update);
+            replyController.setReplyController(update);
+
+            if (botData.isInputWaiting()) {
+                messageInterceptor.interceptMessage(update);
+                botData.setInputWaiting(false);
+            }
 
                 try {
-                    if (masterController.sendMessage() != null) {
-                        if (masterController.sendMessage().getText() != null && !update.hasCallbackQuery()) {
-                            log.info("Отправлено сообщение: " + masterController.sendMessage().getText());
-                            execute(masterController.sendMessage());
+                    if (replyController.sendMessage() != null) {
+                        if (replyController.sendMessage().getText() != null && !update.hasCallbackQuery()) {
+                            log.info("Отправлено сообщение: " + replyController.sendMessage().getText());
+                            execute(replyController.sendMessage());
                         }
                     }
                 } catch (TelegramApiException e) {
@@ -66,23 +77,24 @@ public class BotController extends TelegramLongPollingBot {
         }
 
         if (update.hasCallbackQuery()) {
-            telegramData.getCallbackQuery(update);
-            masterController.setCallbackController(update);
+            botData.getCallbackQuery(update);
+            inlineController.setInlineController(update);
+            replyController.setReplyController(update);
 
             try {
 
-                if (masterController.editMessage() != null) {
-                    if (masterController.editMessage().getText() != null) {
-                        log.info("[Callback] Отправлено сообщение: " + masterController.editMessage().getText());
-                        execute(masterController.editMessage());
+                if (inlineController.editMessage() != null) {
+                    if (inlineController.editMessage().getText() != null) {
+                        log.info("[Callback] Отправлено сообщение: " + inlineController.editMessage().getText());
+                        execute(inlineController.editMessage());
                     }
                 }
 
-                if (masterController.sendMessage() != null) {
-                    if (masterController.sendMessage().getText() != null &&
-                            update.getCallbackQuery().getData().equals("list_of_ctg")) {
-                        log.info("[Callback] Отправлено сообщение: " + masterController.sendMessage().getText());
-                        execute(masterController.sendMessage());
+                if (replyController.sendMessage() != null) {
+                    if (replyController.sendMessage().getText() != null &&
+                            (update.getCallbackQuery().getData().equals("menu_btn"))) {
+                        log.info("[CallbackToReply] Отправлено сообщение: " + replyController.sendMessage().getText());
+                        execute(replyController.sendMessage());
                     }
                 }
 

@@ -1,4 +1,4 @@
-package com.nikguscode.TaskTimer.model.service.commands;
+package com.nikguscode.TaskTimer.model.service;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +12,7 @@ public class Logging {
     public static final String notFoundedCommand = """
                             ❌ Кажется, указанная команда не найдена.\s
                             ❓ Используйте "/start\"""";
-    public void receivedUndefinedCommand() {
-        Class<?> currentClass = getClass();
+    public void receivedUndefinedCommand(Class<?> currentClass) {
         log.info("Не найдена команда в " + currentClass.getName());
     }
 

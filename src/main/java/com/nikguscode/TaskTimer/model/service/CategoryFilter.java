@@ -1,74 +1,79 @@
 package com.nikguscode.TaskTimer.model.service;
 
-import com.nikguscode.TaskTimer.model.dal.GetCategory;
+import com.nikguscode.TaskTimer.model.service.strategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.ArrayList;
 
 @Service
 @Getter
 @Setter
+@Slf4j
 public class CategoryFilter {
 
-    private final GetCategory getCategory;
+    private ListOfCategories listOfCategories;
+    private EditMessageText editMessage;
+    private final BotConnection botConnection;
+    private final Logging logging;
     private int totalPages = 0;
-    private int currentPage = 0;
+    private int currentPage = 1;
     private ArrayList<String> currentCategories;
-    private ArrayList<String> currentCallback;
 
     @Autowired
-    public CategoryFilter(GetCategory getCategory) {
-        this.getCategory = getCategory;
+    public CategoryFilter(ListOfCategories listOfCategories,
+                          Logging logging,
+                          BotConnection botConnection) {
+        this.listOfCategories = listOfCategories;
+        this.logging = logging;
+        this.botConnection = botConnection;
+
+        editMessage = new EditMessageText();
     }
 
-    private void createCategoriesArray() {
-        int length = getCategory.getResult().size();
+    private ArrayList<String> createCategoriesArray() {
+        int length = listOfCategories.getCategories().size();
+
+        if (length == 0) {
+            if (currentCategories != null && !currentCategories.isEmpty()) {
+                currentCategories.clear();
+            }
+            return  null;
+        }
+
+        totalPages = (int) Math.ceil(length / 6.0);
+
         currentCategories = new ArrayList<>();
 
-        if (length % 6 == 0) {
-            totalPages = length / 6;
-
-            for (int i = ((6 * (currentPage - 1))); (i + (6 * (currentPage - 1))) < 6; i++) {
-                currentCategories.add(getCategory.getResult().get(i));
-            }
-
-        }
-
-        if (length % 6 != 0) {
-            totalPages = (currentPage / 6) + 1;
-
-            if (length < 6) {
-
-                for (int j = 0; j < length; j++) {
-                    currentCategories.add(getCategory.getResult().get(j));
-                }
-
+        for (int i = ((currentPage - 1) * 6); i < (currentPage * 6) && i < length; i++) {
+            if (listOfCategories.getCategories().get(i) != null) {
+                currentCategories.add(listOfCategories.getCategories().get(i).getCategoryName());
             } else {
-
-                for (int b = ((6 * (currentPage - 1))); (b + (6 * (currentPage - 1))) < 6; b++) {
-                    currentCategories.add(getCategory.getResult().get(b));
-                }
-
-                for (int s = (6 * (currentPage - 2)); s < (s + (6 * (currentPage - 1)) + currentPage % 6); s++) {
-                    currentCategories.add(getCategory.getResult().get(s));
-                }
-
+                break;
             }
-
         }
 
+        return currentCategories;
     }
 
-    public void getCategories() {
-        createCategoriesArray();
+    public ArrayList<String> getCategories(Update update) {
+        botConnection.editMessageConnection(editMessage, update);
+
+        if (createCategoriesArray() == null) {
+            editMessage.setText("Вы ещё не создали категорий :)");
+        }
+
+        return createCategoriesArray();
     }
 
     public void clearArrays() {
         currentCategories.clear();
-        currentCallback.clear();
     }
 
 }

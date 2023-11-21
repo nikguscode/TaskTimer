@@ -1,5 +1,6 @@
 package com.nikguscode.TaskTimer.view.keyboards;
 
+import com.nikguscode.TaskTimer.model.PhraseConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -26,16 +27,16 @@ public class CategoryBoard {
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
 
         InlineKeyboardButton addCategoryButton = new InlineKeyboardButton();
-        addCategoryButton.setText("Добавить категорию");
-        addCategoryButton.setCallbackData("add_ctg");
+        addCategoryButton.setText(PhraseConstants.ADD_CATEGORY);
+        addCategoryButton.setCallbackData(PhraseConstants.CB_ADD_CATEGORY);
 
         InlineKeyboardButton showCategoriesButton = new InlineKeyboardButton();
-        showCategoriesButton.setText("Список созданных категорий");
-        showCategoriesButton.setCallbackData("list_of_ctg");
+        showCategoriesButton.setText(PhraseConstants.LIST_OF_CATEGORIES);
+        showCategoriesButton.setCallbackData(PhraseConstants.CB_CATEGORY_LIST);
 
         InlineKeyboardButton backButton = new InlineKeyboardButton();
-        backButton.setText("Вернуться назад");
-        backButton.setCallbackData("back_btn");
+        backButton.setText(PhraseConstants.BACK_TO_MENU);
+        backButton.setCallbackData(PhraseConstants.CB_BACK_TO_MENU);
 
         keyboardButtonsRow1.add(addCategoryButton);
         keyboardButtonsRow1.add(showCategoriesButton);

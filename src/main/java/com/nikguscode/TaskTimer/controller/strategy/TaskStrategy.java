@@ -1,16 +1,15 @@
-package com.nikguscode.TaskTimer.model.service.strategy;
+package com.nikguscode.TaskTimer.controller.strategy;
 
-import com.nikguscode.TaskTimer.controller.MasterController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.TaskController;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.CommandHandler;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
+import com.nikguscode.TaskTimer.controller.strategy.interfaces.ReplyStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TaskStrategy implements ControllerStrategy {
+public class TaskStrategy implements ReplyStrategy {
 
-    private MasterController masterController;
     private final TaskController taskController;
 
     @Autowired

@@ -1,5 +1,6 @@
 package com.nikguscode.TaskTimer.view.keyboards;
 
+import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.CategoryFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,6 @@ public class CategoryListBoard {
     @Autowired
     public CategoryListBoard(CategoryFilter categoryFilter) {
         this.categoryFilter = categoryFilter;
-        createBoard();
     }
 
     private void createBoard() {
@@ -25,24 +25,20 @@ public class CategoryListBoard {
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 
         if (categoryFilter.getCurrentCategories() != null) {
-            int count = 1;
-
             for (String currentCategory : categoryFilter.getCurrentCategories()) {
                 InlineKeyboardButton categoryButton = new InlineKeyboardButton();
 
                 categoryButton.setText(currentCategory);
-                categoryButton.setCallbackData("category_btn_" + count);
+                categoryButton.setCallbackData(currentCategory);
 
                 List<InlineKeyboardButton> row = new ArrayList<>();
                 row.add(categoryButton);
                 rowList.add(row);
-
-                count ++;
             }
         }
 
         rowList.add(createNavigationRow());
-        rowList.add(createMenuButtonRow());
+        rowList.add(createBackButtonRow());
 
         categoryListBoard.setKeyboard(rowList);
     }
@@ -50,24 +46,30 @@ public class CategoryListBoard {
 
     private List<InlineKeyboardButton> createNavigationRow() {
         InlineKeyboardButton previousPage = new InlineKeyboardButton();
-        previousPage.setText("Назад");
-        previousPage.setCallbackData("previous_page");
+        previousPage.setText(PhraseConstants.PREVIOUS_PAGE);
+        previousPage.setCallbackData(PhraseConstants.CB_PREVIOUS_PAGE);
 
         InlineKeyboardButton nextPage = new InlineKeyboardButton();
-        nextPage.setText("Вперёд");
-        nextPage.setCallbackData("next_page");
+        nextPage.setText(PhraseConstants.NEXT_PAGE);
+        nextPage.setCallbackData(PhraseConstants.CB_NEXT_PAGE);
 
         List<InlineKeyboardButton> row = new ArrayList<>();
-        row.add(previousPage);
-        row.add(nextPage);
+
+        if (categoryFilter.getCurrentPage() != 1 && categoryFilter.getTotalPages() != 1) {
+            row.add(previousPage);
+        }
+
+        if (categoryFilter.getCurrentPage() != categoryFilter.getTotalPages() && categoryFilter.getTotalPages() != 1) {
+            row.add(nextPage);
+        }
 
         return row;
     }
 
-    private List<InlineKeyboardButton> createMenuButtonRow() {
+    private List<InlineKeyboardButton> createBackButtonRow() {
         InlineKeyboardButton menuButton = new InlineKeyboardButton();
-        menuButton.setText("Вернуться в главное меню");
-        menuButton.setCallbackData("menu_btn");
+        menuButton.setText(PhraseConstants.BACK);
+        menuButton.setCallbackData(PhraseConstants.CB_BACK_1);
 
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(menuButton);
@@ -76,7 +78,7 @@ public class CategoryListBoard {
     }
 
     public InlineKeyboardMarkup getBoard() {
-        createBoard(); // update board
+        createBoard();
         return categoryListBoard;
     }
 
