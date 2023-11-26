@@ -1,11 +1,14 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers;
 
-import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.*;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.CommandHandler;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.EditMessage;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
+import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.UCommandHandler;
 import com.nikguscode.TaskTimer.model.PhraseConstants;
-import com.nikguscode.TaskTimer.model.service.*;
-import com.nikguscode.TaskTimer.model.service.crud.AddCategory;
-import com.nikguscode.TaskTimer.model.service.crud.GetCategory;
-import com.nikguscode.TaskTimer.model.service.strategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.Logging;
+import com.nikguscode.TaskTimer.model.service.crud.Add;
+import com.nikguscode.TaskTimer.model.service.crud.Get;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
@@ -34,9 +37,8 @@ public class CategoryController implements CommandHandler, MessageSender, UComma
     private final BotResponse botResponse;
     private final BotConnection botConnection;
     private final Logging logging;
-    private final MessageInterceptor messageInterceptor;
-    private final GetCategory getCategory;
-    private final AddCategory addCategory;
+    private final Get get;
+    private final Add add;
     private final ListOfCategories listOfCategories;
     private final CategoryBoard categoryBoard;
     private SendMessage sendMessage;
@@ -47,18 +49,16 @@ public class CategoryController implements CommandHandler, MessageSender, UComma
                               BotResponse botResponse,
                               BotConnection botConnection,
                               Logging logging,
-                              MessageInterceptor messageInterceptor,
-                              GetCategory getCategory,
-                              AddCategory addCategory,
+                              Get get,
+                              Add add,
                               ListOfCategories listOfCategories,
                               CategoryBoard categoryBoard) {
         this.botData = botData;
         this.botResponse = botResponse;
         this.botConnection = botConnection;
         this.logging = logging;
-        this.messageInterceptor = messageInterceptor;
-        this.getCategory = getCategory;
-        this.addCategory = addCategory;
+        this.get = get;
+        this.add = add;
         this.listOfCategories = listOfCategories;
         this.categoryBoard = categoryBoard;
 
@@ -88,7 +88,6 @@ public class CategoryController implements CommandHandler, MessageSender, UComma
             if (update.getCallbackQuery().getData().equals(PhraseConstants.CB_ADD_CATEGORY)) {
                 editMessage.setText(PhraseConstants.ADD_CATEGORY_RESPONSE);
                 botData.setInputWaiting(true);
-                sendMessage = messageInterceptor.getSendMessage();
             } else {
                 logging.receivedUndefinedCommand(this.getClass());
                 sendMessage.setText(Logging.notFoundedCommand);

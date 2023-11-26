@@ -18,16 +18,18 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+
 @Slf4j
 @Controller
 public class MenuController implements CommandHandler, MessageSender, UCommandHandler, EditMessage {
+
     private final BotData botData;
     private final BotResponse botResponse;
     private final BotConnection botConnection;
     private final Logging logging;
     private final Launch launch;
     private final MenuBoard menuBoard;
-    private final SendMessage sendMessage;
+    private SendMessage sendMessage;
     private EditMessageText editMessage;
 
     @Autowired
@@ -60,7 +62,16 @@ public class MenuController implements CommandHandler, MessageSender, UCommandHa
             case (PhraseConstants.START_TIMER):
                 if (!launch.isStarted()) {
                     launch.start();
-                    botResponse.replyResponse(sendMessage, PhraseConstants.STARTED_TIMER, menuBoard.getBoard());
+
+                    // проверяем, есть ли у пользователя активные категории
+                    if (launch.getSendMessage() == null) {
+                        botResponse.replyResponse(sendMessage, PhraseConstants.STARTED_TIMER, menuBoard.getBoard());
+                    } else {
+                        launch.getSendMessage().getText();
+                        sendMessage = launch.getSendMessage();
+                        launch.setSendMessage(null);
+                    }
+
                 } else {
                     botResponse.replyResponse(sendMessage, PhraseConstants.ERROR_STARTED_TIMER);
                 }
@@ -75,10 +86,7 @@ public class MenuController implements CommandHandler, MessageSender, UCommandHa
                             menuBoard.getBoard()
                     );
                 } else {
-                    botResponse.replyResponse(
-                            sendMessage,
-                            PhraseConstants.ERROR_STOPPED_TIMER
-                    );
+                    botResponse.replyResponse(sendMessage, PhraseConstants.ERROR_STOPPED_TIMER);
                 }
                 break;
 

@@ -1,13 +1,26 @@
 package com.nikguscode.TaskTimer.model.service.commands;
 
 public class Statistics {
-    private final String stat = """
+    private final String statistics = """
             Статистика:
             Количество выполненных задач:\s
             Среднее время выполнения задачи:\s
             Последняя выполненная задача (название категории):\s""";
+
+    public int getCompletedTask() {
+
+        return 0;
+    }
+
+    public int getAverageTime() {
+
+        return 0;
+    }
+
+    public String getLastCompletedTask() {
+
+        return null;
+    }
+
 }
 
-// 1. Количество выполненных задач
-// 2. Среднее время выполнение задачи
-// 3. Последняя выполненная задача

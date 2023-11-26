@@ -8,9 +8,9 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.controller.strategy.interfaces.InlineStrategy;
 import com.nikguscode.TaskTimer.controller.strategy.interfaces.ReplyStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 
-@Service
+@Controller
 public class MenuStrategy implements ReplyStrategy, InlineStrategy {
 
     private final MenuController menuController;

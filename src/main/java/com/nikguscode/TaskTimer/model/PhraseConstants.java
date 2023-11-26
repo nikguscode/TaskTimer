@@ -40,11 +40,15 @@ public class PhraseConstants {
     public static final String EDIT_CATEGORY = EmojiConstants.PENCIL_ICON + " Редактировать";
     public static final String DELETE_CATEGORY = EmojiConstants.DELETE_ICON + " Удалить";
 
-    // команды для редактирования категорий
+    // команды и фразы для редактирования категорий
     public static final String EDIT_CATEGORY_NAME = "Название";
+    public static final String TYPE_NEW_NAME = EmojiConstants.PIN_ICON + " Введите новое название категории:";
+    public static final String CATEGORY_NAME_EDITED = EmojiConstants.SUCCESFULLY_ICON + " Название категории успешно изменено";
     public static final String EDIT_CATEGORY_DESCRIPTION = "Описание";
+    public static final String TYPE_NEW_DESCRIPTION = EmojiConstants.PIN_ICON + " Введите новое описание категории:";
+    public static final String CATEGORY_DESCRIPTION_EDITED = EmojiConstants.SUCCESFULLY_ICON + " Описание категории успешно изменено";
     public static final String EDIT_ACTIVE_CATEGORY = EmojiConstants.ACTIVE_CTG_ICON + " Сделать активной";
-
+    public static final String SELECTED_ACTIVE = EmojiConstants.SUCCESFULLY_ICON + " Категория выбрана активной";
     // ответы бота
     public static final String SELECT_CATEGORY = EmojiConstants.SEARCH_ICON + " Выберите категорию:";
     public static final String SELECTED_TYPE_MANAGEMENT =

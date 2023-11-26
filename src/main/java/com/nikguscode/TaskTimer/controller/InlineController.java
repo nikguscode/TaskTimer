@@ -21,8 +21,8 @@ public class InlineController {
     private UCommandHandler currentCommandHandler;
     private EditMessage currentMessageEditor;
     private final Map<String, InlineStrategy> controllerStrategyMap;
-    private CategoryFilter categoryFilter;
-    private CategoryEditStrategy categoryEditStrategy;
+    private final CategoryFilter categoryFilter;
+    private final CategoryEditStrategy categoryEditStrategy;
 
     public InlineController(MenuStrategy menuStrategy,
                             CategoryStrategy categoryStrategy,
@@ -42,7 +42,10 @@ public class InlineController {
         controllerStrategyMap.put(PhraseConstants.CB_ADD_CATEGORY, categoryStrategy);
         controllerStrategyMap.put(PhraseConstants.CB_CATEGORY_LIST, categoryListStrategy);
         controllerStrategyMap.put(PhraseConstants.CB_BACK_1, categoryListStrategy);
-        controllerStrategyMap.put(PhraseConstants.CB_BACK_2, categoryEditStrategy);
+        controllerStrategyMap.put(PhraseConstants.CB_BACK_2, categoryListStrategy);
+        controllerStrategyMap.put(PhraseConstants.CB_BACK_3, categoryEditStrategy);
+        controllerStrategyMap.put(PhraseConstants.CB_NEXT_PAGE, categoryListStrategy);
+        controllerStrategyMap.put(PhraseConstants.CB_PREVIOUS_PAGE, categoryListStrategy);
     }
 
     // добавляет callback в HashMap

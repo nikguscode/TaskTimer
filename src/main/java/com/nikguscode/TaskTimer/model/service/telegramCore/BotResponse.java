@@ -29,6 +29,10 @@ public class BotResponse {
         sendMessage.setReplyMarkup(boardName);
     }
 
+    public void inlineResponse(EditMessageText editMessage, String responseText) {
+        editMessage.setText(responseText);
+    }
+
     public void inlineResponse(SendMessage sendMessage, String responseText, InlineKeyboardMarkup boardName) {
         sendMessage.setText(responseText);
         sendMessage.setReplyMarkup(boardName);

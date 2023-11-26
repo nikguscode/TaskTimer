@@ -4,16 +4,15 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.UCommandHandler;
 import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.CategoryFilter;
-import com.nikguscode.TaskTimer.model.service.crud.GetCategory;
 import com.nikguscode.TaskTimer.model.service.Logging;
-import com.nikguscode.TaskTimer.model.service.strategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.crud.Get;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryBoard;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryListBoard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -24,19 +23,18 @@ public class CategoryListController implements UCommandHandler, EditMessage {
     private final BotConnection botConnection;
     private final Logging logging;
     private final CategoryFilter categoryFilter;
-    private final GetCategory getCategory;
+    private final Get get;
     private final ListOfCategories listOfCategories;
     private final CategoryListBoard categoryListBoard;
     private final CategoryBoard categoryBoard;
     private EditMessageText editMessage;
-    private SendMessage sendMessage;
 
     @Autowired
     public CategoryListController(BotResponse botResponse,
                                   BotConnection botConnection,
                                   Logging logging,
                                   CategoryFilter categoryFilter,
-                                  GetCategory getCategory,
+                                  Get get,
                                   ListOfCategories listOfCategories,
                                   CategoryListBoard categoryListBoard,
                                   CategoryBoard categoryBoard) {
@@ -44,7 +42,7 @@ public class CategoryListController implements UCommandHandler, EditMessage {
         this.botConnection = botConnection;
         this.logging = logging;
         this.categoryFilter = categoryFilter;
-        this.getCategory = getCategory;
+        this.get = get;
         this.listOfCategories = listOfCategories;
         this.categoryListBoard = categoryListBoard;
         this.categoryBoard = categoryBoard;
@@ -61,8 +59,10 @@ public class CategoryListController implements UCommandHandler, EditMessage {
 
             switch (update.getCallbackQuery().getData()) {
                 case (PhraseConstants.CB_CATEGORY_LIST):
-                    getCategory.transaction(listOfCategories);
+                    // получаем все категории для пользователя, после чего вносим их в ArrayList
+                    get.transaction(listOfCategories);
                     categoryFilter.getCategories(update);
+
                     currentPage = categoryFilter.getCurrentPage();
                     totalPages = categoryFilter.getTotalPages();
 
@@ -75,7 +75,6 @@ public class CategoryListController implements UCommandHandler, EditMessage {
                                 categoryListBoard.getBoard()
                         );
                     }
-
                     break;
 
                 case (PhraseConstants.CB_NEXT_PAGE):
@@ -87,10 +86,12 @@ public class CategoryListController implements UCommandHandler, EditMessage {
                         categoryFilter.clearArrays();
                         categoryFilter.getCategories(update);
 
-                        editMessage.setText(PhraseConstants.CURRENT_PAGE + currentPage + "/" + totalPages);
-                        editMessage.setReplyMarkup(categoryListBoard.getBoard());
+                        botResponse.inlineResponse(
+                                editMessage,
+                                PhraseConstants.CURRENT_PAGE + currentPage + "/" + totalPages,
+                                categoryListBoard.getBoard()
+                        );
                     }
-
                     break;
 
                 case (PhraseConstants.CB_PREVIOUS_PAGE):
@@ -102,20 +103,35 @@ public class CategoryListController implements UCommandHandler, EditMessage {
                         categoryFilter.clearArrays();
                         categoryFilter.getCategories(update);
 
-                        editMessage.setText(PhraseConstants.CURRENT_PAGE + currentPage + "/" + totalPages);
-                        editMessage.setReplyMarkup(categoryListBoard.getBoard());
+                        botResponse.inlineResponse(
+                                editMessage,
+                                PhraseConstants.CURRENT_PAGE + currentPage + "/" + totalPages,
+                                categoryListBoard.getBoard()
+                        );
                     }
-
                     break;
 
                 case (PhraseConstants.CB_BACK_1):
-                    editMessage.setText(PhraseConstants.SELECTED_LIST_OF_CATEGORY);
-                    editMessage.setReplyMarkup(categoryBoard.getBoard());
+                    botResponse.inlineResponse(
+                            editMessage,
+                            PhraseConstants.SELECTED_LIST_OF_CATEGORY,
+                            categoryBoard.getBoard()
+                    );
+                    break;
+
+                case (PhraseConstants.CB_BACK_2):
+                    currentPage = categoryFilter.getCurrentPage();
+                    totalPages = categoryFilter.getTotalPages();
+
+                    botResponse.inlineResponse(
+                            editMessage,
+                            PhraseConstants.CURRENT_PAGE + currentPage + "/" + totalPages,
+                            categoryListBoard.getBoard()
+                    );
                     break;
 
                 default:
                     logging.receivedUndefinedCommand(this.getClass());
-                    sendMessage.setText(Logging.notFoundedCommand);
                     break;
             }
 

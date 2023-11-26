@@ -3,9 +3,9 @@ package com.nikguscode.TaskTimer.controller.keyboardControllers;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.CommandHandler;
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
 import com.nikguscode.TaskTimer.model.PhraseConstants;
-import com.nikguscode.TaskTimer.model.service.crud.GetCategory;
 import com.nikguscode.TaskTimer.model.service.Logging;
-import com.nikguscode.TaskTimer.model.service.strategy.ActiveCategory;
+import com.nikguscode.TaskTimer.model.service.crud.Get;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.GetActiveCategory;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.TaskBoard;
@@ -21,8 +21,8 @@ public class TaskController implements CommandHandler, MessageSender {
     private final BotData botData;
     private final BotResponse botResponse;
     private final Logging logging;
-    private final GetCategory getCategory;
-    private final ActiveCategory activeCategory;
+    private final Get get;
+    private final GetActiveCategory getActiveCategory;
     private final TaskBoard taskBoard;
     private final SendMessage sendMessage;
 
@@ -30,14 +30,14 @@ public class TaskController implements CommandHandler, MessageSender {
     public TaskController(BotData botData,
                           BotResponse botResponse,
                           Logging logging,
-                          GetCategory getCategory,
-                          ActiveCategory activeCategory,
+                          Get get,
+                          GetActiveCategory getActiveCategory,
                           TaskBoard taskBoard) {
         this.botData = botData;
         this.botResponse = botResponse;
         this.logging = logging;
-        this.getCategory = getCategory;
-        this.activeCategory = activeCategory;
+        this.get = get;
+        this.getActiveCategory = getActiveCategory;
         this.taskBoard = taskBoard;
 
         sendMessage = new SendMessage();
@@ -47,16 +47,12 @@ public class TaskController implements CommandHandler, MessageSender {
     public void handleCommands() {
         switch (botData.getMessageText()) {
             case (PhraseConstants.ACTIVE_CATEGORY):
-                getCategory.transaction(activeCategory);
-                botResponse.replyResponse(sendMessage, getCategory.sendMessage().getText());
+                get.transaction(getActiveCategory);
+                botResponse.replyResponse(sendMessage, get.sendMessage().getText());
                 break;
 
             case (PhraseConstants.TYPE_MANAGEMENT):
-                botResponse.replyResponse(
-                        sendMessage,
-                        PhraseConstants.SELECTED_TYPE_MANAGEMENT,
-                        taskBoard.getBoard()
-                );
+                botResponse.replyResponse(sendMessage, PhraseConstants.SELECTED_TYPE_MANAGEMENT, taskBoard.getBoard());
                 break;
 
             default:

@@ -26,15 +26,6 @@ public class BotData {
     private Instant instant;
     private final Logging logging;
 
-    /**
-     * Флаг {@code isInputWaiting} для указания, ожидает ли система ввода от пользователя.
-     * Эта переменная используется для приостановки выполнения кода в контексте класса {@code MessageInterceptor},
-     * пока не будет получено сообщение от пользователя.
-     *
-     * Применяется в следующих контроллерах:
-     * - {@code BotController}
-     * - {@code CategoryController}
-     */
     private boolean isInputWaiting = false;
 
     public BotData(Logging logging) {
@@ -47,8 +38,6 @@ public class BotData {
         userName = update.getMessage().getFrom().getUserName();
         instant = Instant.ofEpochSecond(update.getMessage().getDate());
 
-
-        // get text from incoming message
         logging.getMessage(messageText);
     }
 

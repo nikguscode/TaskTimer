@@ -21,4 +21,5 @@ public class EmojiConstants {
     public static final String DELETE_ICON = "\uD83D\uDDD1️";
     public static final String PLUS_ICON = "➕";
     public static final String SUCCESFULLY_ICON = "✅";
+    public static final String PIN_ICON = "\uD83D\uDCCC";
 }

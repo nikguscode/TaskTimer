@@ -1,6 +1,6 @@
 package com.nikguscode.TaskTimer.model.service;
 
-import com.nikguscode.TaskTimer.model.service.strategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import lombok.Getter;
 import lombok.Setter;

@@ -13,15 +13,19 @@ public class Logging {
                             ❌ Кажется, указанная команда не найдена.\s
                             ❓ Используйте "/start\"""";
     public void receivedUndefinedCommand(Class<?> currentClass) {
-        log.info("Не найдена команда в " + currentClass.getName());
+        log.warn("Не найдена команда в {}", currentClass.getName());
+    }
+
+    public void callbackUndefinedError(Class<?> currentClass) {
+        log.warn("Не найден callback в {}", currentClass.getName());
     }
 
     public void debugMessage(String message) {
-        log.debug("Полученное сообщение: " + message);
+        log.debug("Полученное сообщение: {}", message);
     }
 
     public void getMessage(String message) {
-        log.info("Полученное сообщение: " + message);
+        log.info("Полученное сообщение: {}", message);
     }
 
 }
