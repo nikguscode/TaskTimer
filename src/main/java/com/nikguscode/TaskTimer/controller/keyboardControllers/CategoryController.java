@@ -8,7 +8,7 @@ import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.Logging;
 import com.nikguscode.TaskTimer.model.service.crud.Add;
 import com.nikguscode.TaskTimer.model.service.crud.Get;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.CategoryList;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
@@ -39,7 +39,7 @@ public class CategoryController implements CommandHandler, MessageSender, UComma
     private final Logging logging;
     private final Get get;
     private final Add add;
-    private final ListOfCategories listOfCategories;
+    private final CategoryList categoryList;
     private final CategoryBoard categoryBoard;
     private SendMessage sendMessage;
     private EditMessageText editMessage;
@@ -51,7 +51,7 @@ public class CategoryController implements CommandHandler, MessageSender, UComma
                               Logging logging,
                               Get get,
                               Add add,
-                              ListOfCategories listOfCategories,
+                              CategoryList categoryList,
                               CategoryBoard categoryBoard) {
         this.botData = botData;
         this.botResponse = botResponse;
@@ -59,7 +59,7 @@ public class CategoryController implements CommandHandler, MessageSender, UComma
         this.logging = logging;
         this.get = get;
         this.add = add;
-        this.listOfCategories = listOfCategories;
+        this.categoryList = categoryList;
         this.categoryBoard = categoryBoard;
 
         sendMessage = new SendMessage();

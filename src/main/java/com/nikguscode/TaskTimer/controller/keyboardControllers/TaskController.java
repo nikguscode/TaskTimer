@@ -5,7 +5,7 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.Logging;
 import com.nikguscode.TaskTimer.model.service.crud.Get;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.GetActiveCategory;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.ActiveCategoryGetter;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.TaskBoard;
@@ -22,7 +22,7 @@ public class TaskController implements CommandHandler, MessageSender {
     private final BotResponse botResponse;
     private final Logging logging;
     private final Get get;
-    private final GetActiveCategory getActiveCategory;
+    private final ActiveCategoryGetter activeCategoryGetter;
     private final TaskBoard taskBoard;
     private final SendMessage sendMessage;
 
@@ -31,13 +31,13 @@ public class TaskController implements CommandHandler, MessageSender {
                           BotResponse botResponse,
                           Logging logging,
                           Get get,
-                          GetActiveCategory getActiveCategory,
+                          ActiveCategoryGetter activeCategoryGetter,
                           TaskBoard taskBoard) {
         this.botData = botData;
         this.botResponse = botResponse;
         this.logging = logging;
         this.get = get;
-        this.getActiveCategory = getActiveCategory;
+        this.activeCategoryGetter = activeCategoryGetter;
         this.taskBoard = taskBoard;
 
         sendMessage = new SendMessage();
@@ -47,7 +47,7 @@ public class TaskController implements CommandHandler, MessageSender {
     public void handleCommands() {
         switch (botData.getMessageText()) {
             case (PhraseConstants.ACTIVE_CATEGORY):
-                get.transaction(getActiveCategory);
+                get.transaction(activeCategoryGetter);
                 botResponse.replyResponse(sendMessage, get.sendMessage().getText());
                 break;
 

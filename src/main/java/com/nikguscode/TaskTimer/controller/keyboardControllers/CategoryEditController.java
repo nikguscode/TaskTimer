@@ -7,7 +7,7 @@ import com.nikguscode.TaskTimer.model.service.CategoryFilter;
 import com.nikguscode.TaskTimer.model.service.Logging;
 import com.nikguscode.TaskTimer.model.service.crud.Delete;
 import com.nikguscode.TaskTimer.model.service.crud.Update;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.SetActiveCategory;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.ActiveCategorySetter;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
@@ -30,7 +30,7 @@ public class CategoryEditController implements UCommandHandler, EditMessage {
     private final Update update;
     private final Delete delete;
     private final CategoryFilter categoryFilter;
-    private final SetActiveCategory setActiveCategory;
+    private final ActiveCategorySetter activeCategorySetter;
     private final CategoryEditBoard categoryEditBoard;
     private final CategoryListBoard categoryListBoard;
     private EditMessageText editMessage;
@@ -44,7 +44,7 @@ public class CategoryEditController implements UCommandHandler, EditMessage {
                                   Update update,
                                   Delete delete,
                                   CategoryFilter categoryFilter,
-                                  SetActiveCategory setActiveCategory,
+                                  ActiveCategorySetter activeCategorySetter,
                                   CategoryEditBoard categoryEditBoard,
                                   CategoryListBoard categoryListBoard) {
         this.botData = botData;
@@ -54,7 +54,7 @@ public class CategoryEditController implements UCommandHandler, EditMessage {
         this.update = update;
         this.delete = delete;
         this.categoryFilter = categoryFilter;
-        this.setActiveCategory = setActiveCategory;
+        this.activeCategorySetter = activeCategorySetter;
         this.categoryEditBoard = categoryEditBoard;
         this.categoryListBoard = categoryListBoard;
     }
@@ -97,7 +97,7 @@ public class CategoryEditController implements UCommandHandler, EditMessage {
                         PhraseConstants.SELECTED_ACTIVE
                 );
 
-                setActiveCategory.transaction(lastCategoryCallback);
+                activeCategorySetter.transaction(lastCategoryCallback);
                 break;
 
             case (PhraseConstants.CB_EDIT_CATEGORY_NAME):

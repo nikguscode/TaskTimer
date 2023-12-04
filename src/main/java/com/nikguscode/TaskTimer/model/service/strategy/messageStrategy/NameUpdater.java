@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Service
-public class UpdateName implements Transaction {
+public class NameUpdater implements Transaction {
 
     private final BotData botData;
     private final CategoryRepository categoryRepository;
     private final Update update;
     private final SendMessage sendMessage;
 
-    public UpdateName(CategoryRepository categoryRepository,
-                      Update update,
-                      BotData botData) {
+    public NameUpdater(CategoryRepository categoryRepository,
+                       Update update,
+                       BotData botData) {
         this.categoryRepository = categoryRepository;
         this.update = update;
         this.botData = botData;

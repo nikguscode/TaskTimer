@@ -6,7 +6,7 @@ import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.CategoryFilter;
 import com.nikguscode.TaskTimer.model.service.Logging;
 import com.nikguscode.TaskTimer.model.service.crud.Get;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.CategoryList;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryBoard;
@@ -24,7 +24,7 @@ public class CategoryListController implements UCommandHandler, EditMessage {
     private final Logging logging;
     private final CategoryFilter categoryFilter;
     private final Get get;
-    private final ListOfCategories listOfCategories;
+    private final CategoryList categoryList;
     private final CategoryListBoard categoryListBoard;
     private final CategoryBoard categoryBoard;
     private EditMessageText editMessage;
@@ -35,7 +35,7 @@ public class CategoryListController implements UCommandHandler, EditMessage {
                                   Logging logging,
                                   CategoryFilter categoryFilter,
                                   Get get,
-                                  ListOfCategories listOfCategories,
+                                  CategoryList categoryList,
                                   CategoryListBoard categoryListBoard,
                                   CategoryBoard categoryBoard) {
         this.botResponse = botResponse;
@@ -43,7 +43,7 @@ public class CategoryListController implements UCommandHandler, EditMessage {
         this.logging = logging;
         this.categoryFilter = categoryFilter;
         this.get = get;
-        this.listOfCategories = listOfCategories;
+        this.categoryList = categoryList;
         this.categoryListBoard = categoryListBoard;
         this.categoryBoard = categoryBoard;
     }
@@ -60,7 +60,7 @@ public class CategoryListController implements UCommandHandler, EditMessage {
             switch (update.getCallbackQuery().getData()) {
                 case (PhraseConstants.CB_CATEGORY_LIST):
                     // получаем все категории для пользователя, после чего вносим их в ArrayList
-                    get.transaction(listOfCategories);
+                    get.transaction(categoryList);
                     categoryFilter.getCategories(update);
 
                     currentPage = categoryFilter.getCurrentPage();

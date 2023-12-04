@@ -1,6 +1,8 @@
 package com.nikguscode.TaskTimer.model.service.telegramCore;
 
+import com.nikguscode.TaskTimer.model.entity.UserState;
 import com.nikguscode.TaskTimer.model.service.Logging;
+import com.nikguscode.TaskTimer.model.service.UserMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +27,14 @@ public class BotData {
     private String lastCallback;
     private Instant instant;
     private final Logging logging;
+    private UserMap userMap;
 
     private boolean isInputWaiting = false;
 
-    public BotData(Logging logging) {
+    public BotData(Logging logging,
+                   UserMap userMap) {
         this.logging = logging;
+        this.userMap = userMap;
     }
 
     public void getMessageInfo(Update update) {
@@ -38,12 +43,20 @@ public class BotData {
         userName = update.getMessage().getFrom().getUserName();
         instant = Instant.ofEpochSecond(update.getMessage().getDate());
 
+        UserState userState = userMap.getUserState(chatId);
+        userState.setUserName(userName);
+
         logging.getMessage(messageText);
     }
 
-    public void getCallbackQuery(Update update) {
+    public void getCallbackInfo(Update update) {
         lastCallback = update.getCallbackQuery().getData();
         messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        UserState userState = userMap.getUserState(chatId);
+        userState.setLastMessageId(messageId);
+
+        log.debug("messageId: {}", messageId);
     }
 
     public void getFormattedCategory(String message) {

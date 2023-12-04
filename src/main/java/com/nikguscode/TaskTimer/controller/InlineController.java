@@ -9,6 +9,8 @@ import com.nikguscode.TaskTimer.controller.strategy.MenuStrategy;
 import com.nikguscode.TaskTimer.controller.strategy.interfaces.InlineStrategy;
 import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.CategoryFilter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -16,28 +18,43 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.Map;
 
 @Controller
+@Slf4j
 public class InlineController {
 
-    private UCommandHandler currentCommandHandler;
-    private EditMessage currentMessageEditor;
     private final Map<String, InlineStrategy> controllerStrategyMap;
     private final CategoryFilter categoryFilter;
     private final CategoryEditStrategy categoryEditStrategy;
+    private final MenuStrategy menuStrategy;
+    private final CategoryStrategy categoryStrategy;
+    private final CategoryListStrategy categoryListStrategy;
 
+    @Autowired
     public InlineController(MenuStrategy menuStrategy,
                             CategoryStrategy categoryStrategy,
                             CategoryListStrategy categoryListStrategy,
                             CategoryEditStrategy categoryEditStrategy,
                             Map<String, InlineStrategy> controllerStrategyMap,
                             CategoryFilter categoryFilter) {
-        this.controllerStrategyMap = controllerStrategyMap;
         this.categoryFilter = categoryFilter;
+        this.menuStrategy = menuStrategy;
+        this.categoryStrategy = categoryStrategy;
+        this.categoryListStrategy = categoryListStrategy;
         this.categoryEditStrategy = categoryEditStrategy;
+        this.controllerStrategyMap = controllerStrategyMap;
+    }
 
-        currentCommandHandler = menuStrategy.getUCommandHandler();
-        currentMessageEditor = menuStrategy.getEditSender();
+    // добавляет callback (название категории-кнопка) в HashMap
+    private synchronized void initializeCategories() {
+        if (categoryFilter.getCurrentCategories() != null) {
+            categoryFilter.getCurrentCategories().forEach(currentCategory -> controllerStrategyMap.put(currentCategory, categoryEditStrategy));
+            log.debug("categories: {}", categoryFilter.getCurrentCategories());
+        }
+    }
 
-        // выбирает контроллер в зависимости от callback
+    private synchronized void initializeStates(MenuStrategy menuStrategy,
+                                               CategoryStrategy categoryStrategy,
+                                               CategoryListStrategy categoryListStrategy,
+                                               CategoryEditStrategy categoryEditStrategy) {
         controllerStrategyMap.put(PhraseConstants.CB_BACK_TO_MENU, menuStrategy);
         controllerStrategyMap.put(PhraseConstants.CB_ADD_CATEGORY, categoryStrategy);
         controllerStrategyMap.put(PhraseConstants.CB_CATEGORY_LIST, categoryListStrategy);
@@ -48,29 +65,34 @@ public class InlineController {
         controllerStrategyMap.put(PhraseConstants.CB_PREVIOUS_PAGE, categoryListStrategy);
     }
 
-    // добавляет callback в HashMap
-    public void initialize() {
-        if (categoryFilter.getCurrentCategories() != null && !categoryFilter.getCurrentCategories().isEmpty()) {
-            for (String currentCategory : categoryFilter.getCurrentCategories()) {
-                controllerStrategyMap.put(currentCategory, categoryEditStrategy);
-            }
-        }
-    }
+    public synchronized EditMessage setInlineController(Update update) {
+        initializeCategories();
+        initializeStates(menuStrategy, categoryStrategy, categoryListStrategy, categoryEditStrategy);
 
-    public void setInlineController(Update update) {
-        initialize();
-        InlineStrategy inlineStrategy = controllerStrategyMap.get(update.getCallbackQuery().getData());
+        String callBackData = update.getCallbackQuery().getData();
+        InlineStrategy inlineStrategy = controllerStrategyMap.get(callBackData);
 
-        if (inlineStrategy != null) {
-            currentCommandHandler = inlineStrategy.getUCommandHandler();
-            currentMessageEditor = inlineStrategy.getEditSender();
+        if (inlineStrategy == null) {
+            throw new IllegalArgumentException("Invalid callback data: " + callBackData);
         }
 
-        currentCommandHandler.handleCommands(update);
+        return selectHandlerAndEditor(inlineStrategy, update);
     }
 
-    public EditMessageText editMessage() {
-        return currentMessageEditor.editMessage();
+    public EditMessageText editMessage(Update update) {
+        EditMessageText editedMessage = setInlineController(update).editMessage();
+        log.debug("editMessage: {}", editedMessage);
+        return editedMessage;
+    }
+
+    private synchronized EditMessage selectHandlerAndEditor(InlineStrategy inlineStrategy, Update update) {
+        UCommandHandler commandHandler = inlineStrategy.getUCommandHandler();
+        EditMessage editMessage = inlineStrategy.getEditSender();
+        log.debug("commandHandler: {}", commandHandler);
+        log.debug("editMessage: {}", editMessage);
+
+        commandHandler.handleCommands(update);
+        return editMessage;
     }
 
 }

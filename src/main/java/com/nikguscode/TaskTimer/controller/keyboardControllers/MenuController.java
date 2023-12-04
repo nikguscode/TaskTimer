@@ -7,12 +7,12 @@ import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterface
 import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.service.Logging;
 import com.nikguscode.TaskTimer.model.service.commands.Launch;
+import com.nikguscode.TaskTimer.model.service.commands.Statistics;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotResponse;
 import com.nikguscode.TaskTimer.view.keyboards.MenuBoard;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -28,22 +28,24 @@ public class MenuController implements CommandHandler, MessageSender, UCommandHa
     private final BotConnection botConnection;
     private final Logging logging;
     private final Launch launch;
+    private final Statistics statistics;
     private final MenuBoard menuBoard;
     private SendMessage sendMessage;
     private EditMessageText editMessage;
 
-    @Autowired
     public MenuController(BotData botData,
                           BotResponse botResponse,
                           BotConnection botConnection,
                           Logging logging,
                           Launch launch,
+                          Statistics statistics,
                           MenuBoard menuBoard) {
         this.botData = botData;
         this.botResponse = botResponse;
         this.botConnection = botConnection;
         this.logging = logging;
         this.launch = launch;
+        this.statistics = statistics;
         this.menuBoard = menuBoard;
 
         sendMessage = new SendMessage();
@@ -57,6 +59,7 @@ public class MenuController implements CommandHandler, MessageSender, UCommandHa
                 break;
 
             case (PhraseConstants.STATISTICS):
+                botResponse.replyResponse(sendMessage, statistics.getStat());
                 break;
 
             case (PhraseConstants.START_TIMER):
@@ -64,7 +67,7 @@ public class MenuController implements CommandHandler, MessageSender, UCommandHa
                     launch.start();
 
                     // проверяем, есть ли у пользователя активные категории
-                    if (launch.getSendMessage() == null) {
+                    if (launch.getSendMessage().getText() == null) {
                         botResponse.replyResponse(sendMessage, PhraseConstants.STARTED_TIMER, menuBoard.getBoard());
                     } else {
                         launch.getSendMessage().getText();

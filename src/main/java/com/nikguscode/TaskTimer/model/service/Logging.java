@@ -20,10 +20,6 @@ public class Logging {
         log.warn("Не найден callback в {}", currentClass.getName());
     }
 
-    public void debugMessage(String message) {
-        log.debug("Полученное сообщение: {}", message);
-    }
-
     public void getMessage(String message) {
         log.info("Полученное сообщение: {}", message);
     }

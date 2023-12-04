@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Service
-public class UpdateDescription implements Transaction {
+public class DescriptionUpdater implements Transaction {
 
     private final BotData botData;
     private final CategoryRepository categoryRepository;
@@ -17,10 +17,10 @@ public class UpdateDescription implements Transaction {
     private final Get get;
     private final SendMessage sendMessage;
 
-    public UpdateDescription(CategoryRepository categoryRepository,
-                             Update update,
-                             Get get,
-                             BotData botData) {
+    public DescriptionUpdater(CategoryRepository categoryRepository,
+                              Update update,
+                              Get get,
+                              BotData botData) {
         this.categoryRepository = categoryRepository;
         this.update = update;
         this.botData = botData;

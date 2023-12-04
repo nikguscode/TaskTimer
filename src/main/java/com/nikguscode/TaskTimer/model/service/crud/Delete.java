@@ -2,7 +2,7 @@ package com.nikguscode.TaskTimer.model.service.crud;
 
 import com.nikguscode.TaskTimer.model.repository.CategoryRepository;
 import com.nikguscode.TaskTimer.model.service.CategoryFilter;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.CategoryList;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import com.nikguscode.TaskTimer.view.EmojiConstants;
 import com.nikguscode.TaskTimer.view.keyboards.CategoryListBoard;
@@ -18,26 +18,26 @@ public class Delete {
     private final CategoryRepository categoryRepository;
     private final CategoryListBoard categoryListBoard;
     private final CategoryFilter categoryFilter;
-    private final ListOfCategories listOfCategories;
+    private final CategoryList categoryList;
 
     @Autowired
     public Delete(CategoryRepository categoryRepository,
                   CategoryListBoard categoryListBoard,
                   CategoryFilter categoryFilter,
-                  ListOfCategories listOfCategories,
+                  CategoryList categoryList,
                   BotData botData) {
         this.categoryRepository = categoryRepository;
         this.botData = botData;
         this.categoryListBoard = categoryListBoard;
         this.categoryFilter = categoryFilter;
-        this.listOfCategories = listOfCategories;
+        this.categoryList = categoryList;
     }
 
     public EditMessageText transaction(Update update, String categoryName, int messageId) {
 
         categoryRepository.deleteByCategoryNameAndUserId(categoryName, botData.getChatId());
 
-        listOfCategories.transaction(botData.getChatId());
+        categoryList.transaction(botData.getChatId());
         categoryFilter.clearArrays();
         categoryFilter.getCategories(update);
 

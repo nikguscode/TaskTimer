@@ -1,11 +1,13 @@
-/*
- * This class contains all controllers for the keyboards:
- * - MenuController for MenuBoard
- * - TaskController for TaskBoard
- * - CategoryController for CategoryBoard, which is an inline keyboard
- * - CategoryListController for CategoryListBoard, which is an inline keyboard
- * - CategoryEditController for CategoryEditBoard, which is an inline keyboard and contains commands for editing a Category from CategoryListBoard
+/**
+ * <b>Данный пакет содержит интерфейсы, для абстракции контроллеров.</b>
+ * <br>- {@link com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender MessageSender}
+ * необходим для отправки сообщений.
+ * <br>- {@link com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.EditMessage EditMessage}
+ * необходим для редактирования сообщений.
+ * <br>- {@link com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.CommandHandler CommandHandler}
+ * необходим для выполнения логики Reply клавиатур.
+ * <br>- {@link com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.UCommandHandler UCommandHandler}
+ * необходим для выполнения логики ответа на Callback'и пользователя.
  */
-
 
 package com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces;

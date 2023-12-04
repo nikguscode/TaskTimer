@@ -72,21 +72,21 @@ public class BotController extends TelegramLongPollingBot {
                 } catch (Exception e) {
                     log.error("Непредвиденная ошибка при отправке сообщения", e);
                     throw new RuntimeException("Непредвиденная ошибка: " + e.getMessage(), e);
-                }
+                                                                                                                                        }
 
         }
 
         if (update.hasCallbackQuery()) {
-            botData.getCallbackQuery(update);
+            botData.getCallbackInfo(update);
             inlineController.setInlineController(update);
             replyController.setReplyController(update);
 
             try {
 
-                if (inlineController.editMessage() != null) {
-                    if (inlineController.editMessage().getText() != null) {
-                        log.info("[Callback] Отправлено сообщение: " + inlineController.editMessage().getText());
-                        execute(inlineController.editMessage());
+                if (inlineController.editMessage(update) != null) {
+                    if (inlineController.editMessage(update).getText() != null) {
+                        log.info("[Callback] Отправлено сообщение: " + inlineController.editMessage(update).getText());
+                        execute(inlineController.editMessage(update));
                     }
                 }
 

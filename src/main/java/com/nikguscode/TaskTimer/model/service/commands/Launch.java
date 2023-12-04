@@ -1,9 +1,12 @@
 package com.nikguscode.TaskTimer.model.service.commands;
 
 
+import com.nikguscode.TaskTimer.model.entity.SessionState;
 import com.nikguscode.TaskTimer.model.entity.UserState;
+import com.nikguscode.TaskTimer.model.service.SessionMap;
+import com.nikguscode.TaskTimer.model.service.UserMap;
 import com.nikguscode.TaskTimer.model.service.crud.Add;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.GetActiveCategory;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.ActiveCategoryGetter;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -15,55 +18,59 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-/**
- * This class contains "/start" and "/stop" commands logic
- */
-
 @Service
 @Slf4j
 public class Launch {
     private final BotData botData;
-    private final GetActiveCategory getActiveCategory;
-    //private Map<Long, UserState> userStates = new HashMap<>();
-    private String formattedDuration;
+    private final ActiveCategoryGetter activeCategoryGetter;
     private SendMessage sendMessage;
-    private Add add;
+    private final Add add;
+    private final UserMap userMap;
+    private final SessionMap sessionMap;
 
 
     @Autowired
     public Launch(BotData botData,
-                  GetActiveCategory getActiveCategory,
-                  Add add) {
-        this.getActiveCategory = getActiveCategory;
+                  ActiveCategoryGetter activeCategoryGetter,
+                  Add add,
+                  UserMap userMap,
+                  SessionMap sessionMap) {
+        this.activeCategoryGetter = activeCategoryGetter;
         this.botData = botData;
         this.add = add;
+        this.userMap = userMap;
+        this.sessionMap = sessionMap;
 
         sendMessage = new SendMessage();
         sendMessage.setParseMode(ParseMode.HTML);
     }
 
     public void start() {
-        getActiveCategory.transaction(botData.getChatId());
+        activeCategoryGetter.transaction(botData.getChatId());
 
-        if (getActiveCategory.getActiveCategory() == null) {
+        if (activeCategoryGetter.getActiveCategory() == null) {
             sendMessage.setText("""
                     <strong>Ошибка, кажется у вас нет активной категории.</strong>
 
                     Для добавления активной категории перейдите в: \s
                     <em>"Управление типами" -> "Список категорий"-> "Список созданных категорий".</em>\s
-                    
+                                        
                     Затем выберите категорию и сделайте её активной.""");
         } else {
             if (botData.getChatId() != null) {
-                UserState userState = add.getUserState(botData.getChatId());
-                System.out.println(botData.getChatId());
+                UserState userState = userMap.getUserState(botData.getChatId());
                 userState.setStarted(true);
-                userState.setStartTime(botData.getInstant());
-                LocalDateTime localDate = LocalDateTime.now();
 
-                add.createSession(botData.getChatId(), getActiveCategory.getActiveCategory(), localDate);
-                log.info("sessionIdStart: {}", userState.getSessionId());
-                log.info("userId: {}", userState.getUserId());
+                LocalDateTime localDate = LocalDateTime.now();
+                add.createSession(botData.getChatId(), activeCategoryGetter.getActiveCategory(), localDate);
+
+                SessionState sessionState = sessionMap.getSessionState(botData.getChatId());
+                sessionState.setStartDate(localDate);
+
+                log.debug("[START TIMER] sessionObject: {}", sessionState);
+                log.debug("[START TIMER] sessionId: {}", sessionState.getSessionId());
+                log.debug("[START TIMER] userId: {}", sessionState.getUserId());
+                log.debug("[START TIMER] startDate: {}", sessionState.getStartDate());
             }
         }
 
@@ -71,44 +78,58 @@ public class Launch {
 
     @Transactional
     public void stop() {
-        UserState userState = add.getUserState(botData.getChatId());
-        log.info("sessionIdStop1: {}", userState.getSessionId());
-        System.out.println(userState);
+        UserState userState = userMap.getUserState(botData.getChatId());
         userState.setStarted(false);
-        userState.setEndTime(botData.getInstant());
-        getDuration();
+
         LocalDateTime localDate = LocalDateTime.now();
-        add.endSession(userState, localDate, formattedDuration);
-        log.info("sessionIdStop2: {}", userState.getSessionId());
+
+        SessionState sessionState = sessionMap.getSessionState(botData.getChatId());
+        sessionState.setEndDate(localDate);
+
+        getDuration();
+        add.endSession(sessionState, localDate, sessionState.getDuration());
+
+        log.debug("[FINISH TIMER] sessionId: {}", sessionState.getSessionId());
+        log.debug("[FINISH TIMER] userId: {}", sessionState.getUserId());
+        log.debug("[FINISH TIMER] endDate: {}", sessionState.getEndDate());
+        log.debug("[FINISH TIMER] formattedTime: {}", sessionState.getDuration());
     }
 
     @Transactional
     private void getDuration() {
-        UserState userState = add.getUserState(botData.getChatId());
-        Duration duration = Duration.between(userState.getStartTime(), userState.getEndTime());
+        SessionState sessionState = sessionMap.getSessionState(botData.getChatId());
+        Duration duration = Duration.between(sessionState.getStartDate(), sessionState.getEndDate());
 
+        String formattedDuration;
         if (duration.toDays() == 0) {
             formattedDuration = (duration.toHours() < 10 ? "0" : "") + duration.toHours() % 24 + ":"
                     + (duration.toMinutes() < 10 ? "0" : "") + duration.toMinutes() % 60 + ":"
                     + (duration.toSeconds() < 10 ? "0" : "") + duration.toSeconds() % 60;
         } else {
             formattedDuration = duration.toDays() + "d. | "
-                    + (duration.toHours() < 10 ? "0" : "") +duration.toHours() % 24 + ":"
-                    + (duration.toMinutes() < 10 ? "0" : "") +duration.toMinutes() % 60 + ":"
+                    + (duration.toHours() < 10 ? "0" : "") + duration.toHours() % 24 + ":"
+                    + (duration.toMinutes() < 10 ? "0" : "") + duration.toMinutes() % 60 + ":"
                     + (duration.toSeconds() < 10 ? "0" : "") + duration.toSeconds() % 60;
         }
 
-        userState.setFormattedTime(formattedDuration);
+        sessionState.setDuration(duration.getSeconds());
+        sessionState.setFormattedTime(formattedDuration);
     }
 
     public boolean isStarted() {
-        Long chatId = botData.getChatId();
-        return chatId != null && add.getUserState(chatId).isStarted();
+
+        if (botData.getChatId() != null) {
+            UserState userState = userMap.getUserState(botData.getChatId());
+            return userState != null && userState.isStarted();
+        }
+
+        return false;
     }
 
     public String getFormattedDuration() {
-        UserState userState = add.getUserState(botData.getChatId());
-        return userState != null ? userState.getFormattedTime() : null;
+        SessionState sessionState = sessionMap.getSessionState(botData.getChatId());
+
+        return sessionState != null ? sessionState.getFormattedTime() : null;
     }
 
     public SendMessage getSendMessage() {

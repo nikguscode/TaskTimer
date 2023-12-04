@@ -1,30 +1,30 @@
-package com.nikguscode.TaskTimer.model.service.strategy.crudStrategy;
+package com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy;
 
 import com.nikguscode.TaskTimer.model.service.crud.Update;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SetActiveCategory {
+public class ActiveCategorySetter {
 
     private BotData botData;
-    private GetActiveCategory getActiveCategory;
+    private ActiveCategoryGetter activeCategoryGetter;
     private Update update;
 
-    public SetActiveCategory(BotData botData,
-                             GetActiveCategory getActiveCategory,
-                             Update update) {
+    public ActiveCategorySetter(BotData botData,
+                                ActiveCategoryGetter activeCategoryGetter,
+                                Update update) {
         this.botData = botData;
-        this.getActiveCategory = getActiveCategory;
+        this.activeCategoryGetter = activeCategoryGetter;
         this.update = update;
     }
 
     public void transaction(String categoryName) {
-        getActiveCategory.transaction(botData.getChatId());
+        activeCategoryGetter.transaction(botData.getChatId());
 
-        if (getActiveCategory.getActiveCategory() != null) {
+        if (activeCategoryGetter.getActiveCategory() != null) {
             update.setActive(
-                    getActiveCategory.getActiveCategory(),
+                    activeCategoryGetter.getActiveCategory(),
                     botData.getChatId(),
                     false
             );

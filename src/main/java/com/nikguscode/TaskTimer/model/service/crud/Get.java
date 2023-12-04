@@ -1,8 +1,8 @@
 package com.nikguscode.TaskTimer.model.service.crud;
 
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.GetActiveCategory;
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.ActiveCategoryGetter;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.CategoryList;
 import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.Transaction;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotData;
 import lombok.Getter;
@@ -21,18 +21,18 @@ public class Get implements MessageSender {
     private final BotData botData;
     private Transaction transaction;
     private SendMessage sendMessage;
-    private GetActiveCategory getActiveCategory;
+    private ActiveCategoryGetter activeCategoryGetter;
     private MessageSender messageSender;
-    private ListOfCategories listOfCategories;
+    private CategoryList categoryList;
 
     @Autowired
     public Get(BotData botData,
-               GetActiveCategory getActiveCategory,
-               ListOfCategories listOfCategories) {
+               ActiveCategoryGetter activeCategoryGetter,
+               CategoryList categoryList) {
         this.botData = botData;
-        this.transaction = getActiveCategory;
-        this.messageSender = getActiveCategory;
-        this.listOfCategories = listOfCategories;
+        this.transaction = activeCategoryGetter;
+        this.messageSender = activeCategoryGetter;
+        this.categoryList = categoryList;
     }
 
     public void transaction(Transaction transaction) {

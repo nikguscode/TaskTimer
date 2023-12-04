@@ -1,6 +1,6 @@
 package com.nikguscode.TaskTimer.model.service;
 
-import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.ListOfCategories;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy.CategoryList;
 import com.nikguscode.TaskTimer.model.service.telegramCore.BotConnection;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @Slf4j
 public class CategoryFilter {
 
-    private ListOfCategories listOfCategories;
+    private CategoryList categoryList;
     private EditMessageText editMessage;
     private final BotConnection botConnection;
     private final Logging logging;
@@ -27,10 +27,10 @@ public class CategoryFilter {
     private ArrayList<String> currentCategories;
 
     @Autowired
-    public CategoryFilter(ListOfCategories listOfCategories,
+    public CategoryFilter(CategoryList categoryList,
                           Logging logging,
                           BotConnection botConnection) {
-        this.listOfCategories = listOfCategories;
+        this.categoryList = categoryList;
         this.logging = logging;
         this.botConnection = botConnection;
 
@@ -38,7 +38,7 @@ public class CategoryFilter {
     }
 
     private ArrayList<String> createCategoriesArray() {
-        int length = listOfCategories.getCategories().size();
+        int length = categoryList.getCategories().size();
 
         if (length == 0) {
             if (currentCategories != null && !currentCategories.isEmpty()) {
@@ -52,8 +52,8 @@ public class CategoryFilter {
         currentCategories = new ArrayList<>();
 
         for (int i = ((currentPage - 1) * 6); i < (currentPage * 6) && i < length; i++) {
-            if (listOfCategories.getCategories().get(i) != null) {
-                currentCategories.add(listOfCategories.getCategories().get(i).getCategoryName());
+            if (categoryList.getCategories().get(i) != null) {
+                currentCategories.add(categoryList.getCategories().get(i).getCategoryName());
             } else {
                 break;
             }

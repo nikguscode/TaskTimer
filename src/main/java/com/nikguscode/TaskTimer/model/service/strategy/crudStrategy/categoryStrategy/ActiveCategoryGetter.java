@@ -1,8 +1,8 @@
-package com.nikguscode.TaskTimer.model.service.strategy.crudStrategy;
+package com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.categoryStrategy;
 
 import com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces.MessageSender;
-import com.nikguscode.TaskTimer.model.PhraseConstants;
 import com.nikguscode.TaskTimer.model.repository.CategoryRepository;
+import com.nikguscode.TaskTimer.model.service.strategy.crudStrategy.Transaction;
 import com.nikguscode.TaskTimer.view.EmojiConstants;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -10,13 +10,13 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 @Service
 @Getter
-public class GetActiveCategory implements Transaction, MessageSender {
+public class ActiveCategoryGetter implements Transaction, MessageSender {
 
     private final CategoryRepository categoryRepository;
     private SendMessage sendMessage;
     private String activeCategory;
 
-    public GetActiveCategory(CategoryRepository categoryRepository) {
+    public ActiveCategoryGetter(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
 
         sendMessage = new SendMessage();

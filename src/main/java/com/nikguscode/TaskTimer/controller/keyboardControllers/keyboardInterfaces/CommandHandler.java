@@ -1,8 +1,8 @@
 package com.nikguscode.TaskTimer.controller.keyboardControllers.keyboardInterfaces;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
 
-@Configuration
+@Controller
 public interface CommandHandler {
     void handleCommands();
 }
